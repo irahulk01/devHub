@@ -10,13 +10,18 @@ import {
 import { auth, googleProvider } from "../firebase";
 import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
+import { getFirebaseErrorMessage } from "../utils/firebaseErrorMessages"; // ✅ central error handler
 
+// Validation schema
 const schema = yup.object({
-  email: yup.string().email("Invalid email").required("Email is required"),
+  email: yup
+    .string()
+    .email("Please enter a valid email")
+    .required("Email is required"),
   password: yup
     .string()
-    .min(6, "Password must be at least 6 characters")
-    .required("Password is required"),
+    .required("Password is required")
+    .min(6, "Password must be at least 6 characters"),
 });
 
 export default function Register() {
@@ -30,17 +35,14 @@ export default function Register() {
     formState: { errors },
   } = useForm({ resolver: yupResolver(schema) });
 
-  // Handle Google Redirect Result (if popup was blocked)
   useEffect(() => {
     getRedirectResult(auth)
       .then((result) => {
-        if (result?.user) {
-          navigate("/");
-        }
+        if (result?.user) navigate("/");
       })
       .catch((err) => {
-        console.error(err);
-        setFirebaseError("Google signup failed. Try again.");
+        const message = getFirebaseErrorMessage(err.code);
+        setFirebaseError(message);
       });
   }, []);
 
@@ -50,28 +52,27 @@ export default function Register() {
       await createUserWithEmailAndPassword(auth, data.email, data.password);
       navigate("/");
     } catch (err) {
-      if (err.code === "auth/email-already-in-use") {
-        setFirebaseError("Email is already in use. Try logging in.");
-      } else {
-        setFirebaseError("Something went wrong. Please try again.");
-      }
+      const message = getFirebaseErrorMessage(err.code);
+      setFirebaseError(message);
     }
   };
 
-// Updated Google Signup with Popup fallback to Redirect
   const handleGoogleSignup = async () => {
     try {
       await signInWithPopup(auth, googleProvider);
       navigate("/");
     } catch (popupError) {
-      console.warn("Popup blocked. Using redirect fallback.");
+      console.warn("Popup blocked. Trying redirect...");
       try {
         await signInWithRedirect(auth, googleProvider);
       } catch (redirectError) {
-        setFirebaseError("Google signup failed. Try again.");
+        const message = getFirebaseErrorMessage(redirectError.code);
+        setFirebaseError(message);
       }
     }
   };
+
+  const handleFocus = () => setFirebaseError("");
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900">
@@ -80,7 +81,19 @@ export default function Register() {
           Create Your Account
         </h2>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        {firebaseError && (
+          <div
+            title={firebaseError}
+            className="bg-red-100 text-red-700 p-2 rounded text-sm text-center mb-4"
+          >
+            {firebaseError.length > 100
+              ? `${firebaseError.slice(0, 100)}...`
+              : firebaseError}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5">
+          {/* Email Field */}
           <div>
             <label className="block mb-1 text-sm font-medium text-gray-700">
               Email
@@ -88,18 +101,18 @@ export default function Register() {
             <input
               type="email"
               {...register("email")}
+              onFocus={handleFocus}
               className={`w-full px-4 py-2 border ${
                 errors.email ? "border-red-500" : "border-gray-300"
               } text-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500`}
-              placeholder="your@email.com"
+              placeholder="you@example.com"
             />
             {errors.email && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.email.message}
-              </p>
+              <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
             )}
           </div>
 
+          {/* Password Field */}
           <div>
             <label className="block mb-1 text-sm font-medium text-gray-700">
               Password
@@ -108,6 +121,7 @@ export default function Register() {
               <input
                 type={showPassword ? "text" : "password"}
                 {...register("password")}
+                onFocus={handleFocus}
                 className={`w-full px-4 py-2 border ${
                   errors.password ? "border-red-500" : "border-gray-300"
                 } text-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500`}
@@ -121,18 +135,11 @@ export default function Register() {
               </span>
             </div>
             {errors.password && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.password.message}
-              </p>
+              <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
             )}
           </div>
 
-          {firebaseError && (
-            <div className="bg-red-100 text-red-700 p-2 rounded text-sm">
-              {firebaseError}
-            </div>
-          )}
-
+          {/* Submit Button */}
           <button
             type="submit"
             className="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700 transition"
