@@ -1,7 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import {
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
+} from "firebase/auth";
 import { auth, googleProvider } from "../firebase";
 import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
@@ -25,6 +30,20 @@ export default function Login() {
     formState: { errors },
   } = useForm({ resolver: yupResolver(schema) });
 
+  // Handle redirect result if popup is blocked
+  useEffect(() => {
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result?.user) {
+          navigate("/");
+        }
+      })
+      .catch((err) => {
+        setFirebaseError("Google login failed. Try again.");
+        console.error(err);
+      });
+  }, []);
+
   const onSubmit = async (data) => {
     setFirebaseError("");
     try {
@@ -43,8 +62,14 @@ export default function Login() {
     try {
       await signInWithPopup(auth, googleProvider);
       navigate("/");
-    } catch (err) {
-      setFirebaseError("Google login failed. Try again.");
+    } catch (popupError) {
+      console.warn("Popup blocked, using redirect fallback.");
+      try {
+        await signInWithRedirect(auth, googleProvider);
+      } catch (redirectError) {
+        setFirebaseError("Google login failed. Try again.");
+        console.error(redirectError);
+      }
     }
   };
 
