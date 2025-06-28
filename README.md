@@ -1,12 +1,93 @@
-# React + Vite
+DevHub – Developer Management Hub
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+DevHub is a full-stack developer management platform built with React + Vite, Firebase Authentication, TailwindCSS, and a mock JSON Server backend. It allows users to register, login, view developer profiles, filter by skills, and explore their blogs.
 
-Currently, two official plugins are available:
+Features:
+- Firebase Auth (Email/Password + Google Login)
+- Form validation using React Hook Form + Yup
+- Filter/search developers by name or skill
+- Profile page with blog list and skills
+- Blog API integration via JSON Server
+- Protected routes with persistent login
+- Responsive design with TailwindCSS
+- Firestore integration for storing user profile data (optional)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Tech Stack:
+- Frontend: React + Vite
+- Styling: TailwindCSS
+- Forms: react-hook-form, yup, @hookform/resolvers
+- Routing: react-router-dom
+- Authentication: firebase (auth, firestore)
+- Backend API: JSON Server (mock data)
+- HTTP client: axios
+- Optional DB: Firebase Firestore
 
-## Expanding the ESLint configuration
+Folder Structure:
+src/
+├── assets/
+├── components/
+├── context/
+├── pages/
+├── routes/
+├── services/
+├── firebase.js
+├── App.jsx
+├── main.jsx
+└── index.css
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Setup Instructions:
+1. Clone the repository
+git clone https://github.com/your-username/devhub.git
+cd devhub
+
+2. Install dependencies
+npm install
+
+3. Create .env file
+VITE_API=http://localhost:3001
+VITE_FIREBASE_KEY=your_api_key
+VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_bucket
+VITE_FIREBASE_MESGSENDER_ID=your_sender_id
+VITE_FIREBASE_APP_ID=your_app_id
+VITE_FIREBASE_MEASURMENT_ID=your_measurement_id
+
+4. Start frontend
+npm run dev
+
+5. Start backend (JSON server)
+npx json-server --watch db.json --port 3001
+
+Firebase Authentication:
+- Enable Email/Password and Google in Firebase Console under Authentication.
+- Store extended user profile in Firestore: /users/{uid}
+- Use uid for secure access control and queries
+
+Firestore Rules (Optional):
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId} {
+      allow read, write: if request.auth.uid == userId;
+    }
+  }
+}
+
+Authentication Flow:
+- Login/Register stores token
+- AuthContext uses Firebase Auth state observer
+- PrivateRoute redirects unauthorized users
+- Firebase ID token persists between refresh
+
+Libraries Used:
+- react
+- react-dom
+- react-router-dom
+- firebase
+- axios
+- tailwindcss
+- react-hook-form
+- yup
+- @hookform/resolvers
+- json-server (dev)
