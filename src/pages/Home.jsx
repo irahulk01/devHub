@@ -1,44 +1,28 @@
 import { useEffect, useState } from "react";
-
-const dummyDevelopers = [
-  {
-    id: 1,
-    name: "Rahul Kumar",
-    email: "rahul@example.com",
-    avatar:
-      "https://cdn.jsdelivr.net/gh/faker-js/assets-person-portrait/male/512/98.jpg",
-    githubLink: "https://github.com/rahul-devhub",
-    skills: ["React", "TailwindCSS", "JavaScript"],
-  },
-  {
-    id: 2,
-    name: "Priya Sharma",
-    email: "priya@example.com",
-    avatar:
-      "https://cdn.jsdelivr.net/gh/faker-js/assets-person-portrait/female/512/70.jpg",
-    githubLink: "https://github.com/priyasharma",
-    skills: ["Node.js", "TypeScript", "MongoDB"],
-  },
-  {
-    id: 3,
-    name: "Aman Verma",
-    email: "aman@example.com",
-    avatar: "https://avatars.githubusercontent.com/u/11580597",
-    githubLink: "https://github.com/amanverma",
-    skills: ["Vue", "Firebase", "CSS"],
-  },
-];
+import { useNavigate } from "react-router-dom";
+import {fetchDeveloperPofile} from "../services/developerServices"
 
 export default function Home() {
+  const [developers, setDevelopers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filtered, setFiltered] = useState(dummyDevelopers);
+  const [filtered, setFiltered] = useState(developers);
+    const navigate = useNavigate();
+
+  useEffect(() => {
+   fetchDeveloperPofile()
+      .then(res => {
+        setDevelopers(res.data);
+        setFiltered(res.data);
+      })
+      .catch(err => console.error("Error fetching developers", err));
+  }, []);
 
   useEffect(() => {
     if (!searchTerm.trim()) {
-      setFiltered(dummyDevelopers);
+      setFiltered(developers);
     } else {
       setFiltered(
-        dummyDevelopers.filter(
+        developers.filter(
           (dev) =>
             dev.skills.some((skill) =>
               skill.toLowerCase().includes(searchTerm.toLowerCase())
@@ -48,7 +32,7 @@ export default function Home() {
     }
   }, [searchTerm]);
 
-  return (
+ return (
     <div className="p-6 max-w-7xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">Developers Hub</h1>
       <input
@@ -73,7 +57,8 @@ export default function Home() {
             {filtered.map((dev) => (
               <tr
                 key={dev.id}
-                className="border-t hover:bg-indigo-50 transition-colors duration-200"
+                className="border-t hover:bg-indigo-50 transition-colors duration-200 cursor-pointer"
+                onClick={() => navigate(`/developers/${dev.id}`)}
               >
                 <td className="px-4 py-2">
                   <img
@@ -102,6 +87,7 @@ export default function Home() {
                     className="text-indigo-600 hover:text-indigo-800 hover:underline text-sm"
                     target="_blank"
                     rel="noreferrer"
+                    onClick={(e) => e.stopPropagation()}
                   >
                     GitHub
                   </a>
@@ -114,3 +100,4 @@ export default function Home() {
     </div>
   );
 }
+
