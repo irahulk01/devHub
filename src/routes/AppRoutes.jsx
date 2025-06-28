@@ -6,6 +6,8 @@ const Home = lazy(() => import("../pages/Home"));
 const Login = lazy(() => import("../pages/Login"));
 const Register = lazy(() => import("../pages/Register"));
 const DeveloperProfile = lazy(() => import("../pages/DeveloperProfile"));
+const DeveloperEditProfile = lazy(() => import("../pages/DeveloperEditProfile"));
+
 const NotFound = lazy(() => import("../pages/NotFound"));
 
 export default function AppRoutes() {
@@ -23,12 +25,19 @@ export default function AppRoutes() {
             </PrivateRoute>
           }
         />
-
         <Route
           path="/developers/:id"
           element={
             <PrivateRoute>
               <DeveloperProfile />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/profile/edit"
+          element={
+            <PrivateRoute>
+              <DeveloperEditProfile />
             </PrivateRoute>
           }
         />

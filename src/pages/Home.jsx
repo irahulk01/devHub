@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {fetchDeveloperPofile} from "../services/developerServices"
+import ReactPaginate from "react-paginate";
 
 export default function Home() {
   const [developers, setDevelopers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filtered, setFiltered] = useState(developers);
-    const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(0);
+  const itemsPerPage = 5;
+  const navigate = useNavigate();
 
   useEffect(() => {
    fetchDeveloperPofile()
@@ -18,19 +21,21 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (!searchTerm.trim()) {
-      setFiltered(developers);
-    } else {
-      setFiltered(
-        developers.filter(
+    const filteredList = !searchTerm.trim()
+      ? developers
+      : developers.filter(
           (dev) =>
             dev.skills.some((skill) =>
               skill.toLowerCase().includes(searchTerm.toLowerCase())
             ) || dev.name.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-      );
-    }
-  }, [searchTerm]);
+        );
+
+    setFiltered(filteredList.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage));
+  }, [searchTerm, developers, currentPage]);
+
+  const handlePageClick = ({ selected }) => {
+    setCurrentPage(selected);
+  };
 
  return (
     <div className="p-6 max-w-7xl mx-auto">
@@ -58,7 +63,7 @@ export default function Home() {
               <tr
                 key={dev.id}
                 className="border-t hover:bg-indigo-50 transition-colors duration-200 cursor-pointer"
-                onClick={() => navigate(`/developers/${dev.id}`)}
+                onClick={() => navigate(`/developers/${dev.uid}`)}
               >
                 <td className="px-4 py-2">
                   <img
@@ -97,7 +102,32 @@ export default function Home() {
           </tbody>
         </table>
       </div>
+      {(searchTerm.trim() ? developers.filter(
+        (dev) =>
+          dev.skills.some((skill) =>
+            skill.toLowerCase().includes(searchTerm.toLowerCase())
+          ) || dev.name.toLowerCase().includes(searchTerm.toLowerCase())
+      ).length : developers.length) > itemsPerPage && (
+        <ReactPaginate
+          previousLabel={"← Previous"}
+          nextLabel={"Next →"}
+          pageCount={Math.ceil(
+            (!searchTerm.trim() ? developers.length : developers.filter(
+              (dev) =>
+                dev.skills.some((skill) =>
+                  skill.toLowerCase().includes(searchTerm.toLowerCase())
+                ) || dev.name.toLowerCase().includes(searchTerm.toLowerCase())
+            ).length) / itemsPerPage
+          )}
+          onPageChange={handlePageClick}
+          containerClassName={"flex justify-center gap-2 mt-6"}
+          pageClassName={"px-3 py-1 border border-gray-300 rounded"}
+          activeClassName={"bg-indigo-600 text-white"}
+          previousClassName={"px-3 py-1 border border-gray-300 rounded"}
+          nextClassName={"px-3 py-1 border border-gray-300 rounded"}
+          disabledClassName={"opacity-50 cursor-not-allowed"}
+        />
+      )}
     </div>
   );
 }
-

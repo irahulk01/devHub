@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
   createUserWithEmailAndPassword,
@@ -9,70 +9,130 @@ import {
 } from "firebase/auth";
 import { auth, googleProvider } from "../firebase";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import * as yup from "yup";
-import { getFirebaseErrorMessage } from "../utils/firebaseErrorMessages"; // ✅ central error handler
+import { toast } from "react-toastify";
+import { getFirebaseErrorMessage } from "../utils/firebaseErrorMessages";
 
-// Validation schema
 const schema = yup.object({
-  email: yup
-    .string()
-    .email("Please enter a valid email")
-    .required("Email is required"),
+  name: yup.string().required("Full name is required").min(3),
+  email: yup.string().email("Invalid email").required("Email is required"),
   password: yup
     .string()
-    .required("Password is required")
-    .min(6, "Password must be at least 6 characters"),
+    .min(6, "Password must be at least 6 characters")
+    .required("Password is required"),
+  skills: yup
+    .array()
+    .of(yup.string().required("Skill is required"))
+    .min(2, "Please enter at least 2 skills"),
 });
 
 export default function Register() {
   const navigate = useNavigate();
-  const [firebaseError, setFirebaseError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [newSkill, setNewSkill] = useState("");
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
-  } = useForm({ resolver: yupResolver(schema) });
+    control,
+    watch,
+    setError,
+    formState: { errors, isSubmitted },
+  } = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+      skills: [],
+    },
+  });
 
-  useEffect(() => {
-    getRedirectResult(auth)
-      .then((result) => {
-        if (result?.user) navigate("/");
-      })
-      .catch((err) => {
-        const message = getFirebaseErrorMessage(err.code);
-        setFirebaseError(message);
-      });
-  }, []);
+  const skills = watch("skills");
+
+  const { fields, append, remove } = useFieldArray({ control, name: "skills" });
+
+useEffect(() => {
+  getRedirectResult(auth)
+    .then(async (result) => {
+      if (result?.user) {
+        const isNew = await saveUserToDB(result.user);
+        if (isNew) {
+          navigate("/profile/edit", { state: { fromGoogle: true } });
+        } else {
+          navigate(`/developers/${result.user.uid}`);
+        }
+      }
+    })
+    .catch((err) => {
+    });
+}, []);
+
+const saveUserToDB = async (user, name = "", skills = []) => {
+  try {
+    const res = await axios.get(`${import.meta.env.VITE_API}/developers?uid=${user.uid}`);
+    if (res.data.length > 0) {
+      return false; // Already exists
+    }
+
+    await axios.post(`${import.meta.env.VITE_API}/developers`, {
+      uid: user.uid,
+      name: name || "Anonymous",
+      email: user.email,
+      avatar: user.photoURL || `https://ui-avatars.com/api/?name=${name || "User"}`,
+      skills,
+    });
+
+    return true; // New user added
+  } catch (err) {
+    return false;
+  }
+};
 
   const onSubmit = async (data) => {
-    setFirebaseError("");
     try {
-      await createUserWithEmailAndPassword(auth, data.email, data.password);
-      navigate("/");
+      const check = await axios.get(`${import.meta.env.VITE_API}/developers?email=${data.email}`);
+      if (check.data.length > 0) {
+        setError("email", { type: "manual", message: "Email already exists. Please use a different one." });
+        return;
+      }
+
+      const { user } = await createUserWithEmailAndPassword(
+        auth,
+        data.email,
+        data.password
+      );
+
+      const saved = await saveUserToDB(user, data.name, data.skills);
+      if (saved) {
+        navigate("/profile/edit", { state: { fromGoogle: true } });
+      } else {
+      }
     } catch (err) {
-      const message = getFirebaseErrorMessage(err.code);
-      setFirebaseError(message);
+      console.error("Registration error:", err);
+      if (err.code === "auth/email-already-in-use") {
+        setError("email", { type: "manual", message: "Email already in use." });
+      } else if (err.code === "auth/weak-password") {
+        setError("password", { type: "manual", message: "Password must be at least 6 characters." });
+      } else {
+        setError("email", { type: "manual", message: getFirebaseErrorMessage(err.code || "auth/unknown") });
+      }
     }
   };
 
   const handleGoogleSignup = async () => {
     try {
-      await signInWithPopup(auth, googleProvider);
+      const result = await signInWithPopup(auth, googleProvider);
+      await saveUserToDB(result.user, result.user.displayName || "", []);
       navigate("/");
     } catch (popupError) {
-      console.warn("Popup blocked. Trying redirect...");
       try {
         await signInWithRedirect(auth, googleProvider);
       } catch (redirectError) {
-        const message = getFirebaseErrorMessage(redirectError.code);
-        setFirebaseError(message);
       }
     }
   };
-
-  const handleFocus = () => setFirebaseError("");
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900">
@@ -81,51 +141,58 @@ export default function Register() {
           Create Your Account
         </h2>
 
-        {firebaseError && (
-          <div
-            title={firebaseError}
-            className="bg-red-100 text-red-700 p-2 rounded text-sm text-center mb-4"
-          >
-            {firebaseError.length > 100
-              ? `${firebaseError.slice(0, 100)}...`
-              : firebaseError}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5">
-          {/* Email Field */}
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          noValidate
+          className="space-y-5"
+        >
+          {/* Full Name */}
           <div>
-            <label className="block mb-1 text-sm font-medium text-gray-700">
-              Email
+            <label className="block text-sm mb-1 text-gray-700">
+              Full Name
             </label>
             <input
-              type="email"
-              {...register("email")}
-              onFocus={handleFocus}
+              type="text"
+              {...register("name")}
+              placeholder="Your full name"
               className={`w-full px-4 py-2 border ${
-                errors.email ? "border-red-500" : "border-gray-300"
-              } text-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500`}
-              placeholder="you@example.com"
+                errors.name ? "border-red-500" : "border-gray-300"
+              } text-gray-800 rounded`}
             />
-            {errors.email && (
-              <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+            {errors.name && (
+              <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
             )}
           </div>
 
-          {/* Password Field */}
+          {/* Email */}
           <div>
-            <label className="block mb-1 text-sm font-medium text-gray-700">
-              Password
-            </label>
+            <label className="block text-sm mb-1 text-gray-700">Email</label>
+            <input
+              type="email"
+              {...register("email")}
+              placeholder="your@email.com"
+              className={`w-full px-4 py-2 border ${
+                errors.email ? "border-red-500" : "border-gray-300"
+              } text-gray-800 rounded`}
+            />
+            {errors.email && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.email.message}
+              </p>
+            )}
+          </div>
+
+          {/* Password */}
+          <div>
+            <label className="block text-sm mb-1 text-gray-700">Password</label>
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
                 {...register("password")}
-                onFocus={handleFocus}
+                placeholder="At least 6 characters"
                 className={`w-full px-4 py-2 border ${
                   errors.password ? "border-red-500" : "border-gray-300"
-                } text-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500`}
-                placeholder="At least 6 characters"
+                } text-gray-800 rounded`}
               />
               <span
                 onClick={() => setShowPassword((prev) => !prev)}
@@ -135,11 +202,72 @@ export default function Register() {
               </span>
             </div>
             {errors.password && (
-              <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.password.message}
+              </p>
             )}
           </div>
 
-          {/* Submit Button */}
+          {/* Skills */}
+          <div>
+            <label className="block text-sm mb-1 text-gray-700">Skills</label>
+
+            {/* Skill Tags */}
+            <div className="flex flex-wrap gap-2 mb-2">
+              {fields.map((field, index) => (
+                <div
+                  key={field.id}
+                  className="relative group bg-indigo-600 text-white px-3 py-1 rounded-full text-sm font-medium shadow"
+                >
+                  {skills[index]}
+                  {skills.length > 2 && (
+                    <button
+                      type="button"
+                      onClick={() => remove(index)}
+                      className="absolute -top-1.5 -right-1.5 bg-red-500 text-white w-4 h-4 rounded-full text-xs flex items-center justify-center group-hover:opacity-100 opacity-0 transition-opacity"
+                      title="Remove"
+                    >
+                      ×
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* Skill Input */}
+            <input
+              type="text"
+              placeholder="Add a skill and press Enter"
+              value={newSkill}
+              onChange={(e) => setNewSkill(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && newSkill.trim()) {
+                  e.preventDefault();
+                  if (!skills.includes(newSkill.trim())) {
+                    append(newSkill.trim());
+                    setNewSkill("");
+                  }
+                }
+              }}
+              className="w-full px-3 py-2 border border-gray-300 rounded text-gray-800"
+            />
+
+            {Array.isArray(errors.skills) &&
+              errors.skills.some((e) => e?.message) && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.skills.find((e) => e?.message)?.message}
+                </p>
+              )}
+
+            <button
+              type="button"
+              onClick={() => append("")}
+              className="text-indigo-600 text-sm mt-2 hover:underline"
+            >
+              + Add another skill
+            </button>
+          </div>
+
           <button
             type="submit"
             className="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700 transition"

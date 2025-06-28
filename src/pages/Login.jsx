@@ -11,8 +11,8 @@ import { auth, googleProvider } from "../firebase";
 import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import { getFirebaseErrorMessage } from "../utils/firebaseErrorMessages";
+import axios from "axios";
 
-// Validation schema
 const schema = yup.object({
   email: yup
     .string()
@@ -35,16 +35,25 @@ export default function Login() {
     formState: { errors },
   } = useForm({ resolver: yupResolver(schema) });
 
-  useEffect(() => {
-    getRedirectResult(auth)
-      .then((result) => {
-        if (result?.user) navigate("/");
-      })
-      .catch((err) => {
-        const message = getFirebaseErrorMessage(err.code);
-        setFirebaseError(message);
-      });
-  }, []);
+  //  Only handle redirect once on page load
+useEffect(() => {
+  getRedirectResult(auth)
+    .then(async (result) => {
+      if (result?.user) {
+        const uid = result.user.uid;
+        const res = await axios.get(`${import.meta.env.VITE_API}/developers?uid=${uid}`);
+        if (res.data.length > 0) {
+          navigate("/");
+        } else {
+          navigate("/profile/edit", { state: { fromGoogle: true } });
+        }
+      }
+    })
+    .catch((err) => {
+      const message = getFirebaseErrorMessage(err.code);
+      setFirebaseError(message);
+    });
+}, []);
 
   const onSubmit = async (data) => {
     setFirebaseError("");
@@ -57,19 +66,23 @@ export default function Login() {
     }
   };
 
-  const handleGoogleLogin = async () => {
-    try {
-      await signInWithPopup(auth, googleProvider);
-      navigate("/");
-    } catch (popupError) {
-      try {
-        await signInWithRedirect(auth, googleProvider);
-      } catch (err) {
-        const message = getFirebaseErrorMessage(err.code);
-        setFirebaseError(message);
-      }
+const handleGoogleLogin = async () => {
+  try {
+    const result = await signInWithPopup(auth, googleProvider);
+    const uid = result.user.uid;
+
+    const res = await axios.get(`${import.meta.env.VITE_API}/developers?uid=${uid}`);
+    if (res.data.length > 0) {
+      navigate("/"); // Profile exists
+    } else {
+      // First time login, collect profile info
+      navigate("/profile/edit", { state: { fromGoogle: true } });
     }
-  };
+  } catch (popupError) {
+    // fallback
+    await signInWithRedirect(auth, googleProvider);
+  }
+};
 
   const clearFirebaseError = () => {
     if (firebaseError) setFirebaseError("");
@@ -94,7 +107,6 @@ export default function Login() {
         )}
 
         <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5">
-          {/* Email */}
           <div>
             <label className="block mb-1 text-sm font-medium text-gray-700">Email</label>
             <input
@@ -111,7 +123,6 @@ export default function Login() {
             )}
           </div>
 
-          {/* Password */}
           <div>
             <label className="block mb-1 text-sm font-medium text-gray-700">Password</label>
             <div className="relative">
@@ -136,7 +147,6 @@ export default function Login() {
             )}
           </div>
 
-          {/* Submit */}
           <button
             type="submit"
             className="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700 transition"
