@@ -1,208 +1,127 @@
 {
   "developers": [
     {
-      "id": 1,
+      "id": "cd44",
+      "uid": "D3iaP8eGDoWSibJm4SvNuACwwAU2",
+      "name": "john dev",
+      "email": "john@example.com",
+      "avatar": "https://ui-avatars.com/api/?name=john%20dev",
+      "skills": [
+        "react",
+        "javascript"
+      ],
+      "githubLink": "https://github.com/john",
+      "location": "Noida",
+      "title": "web dev",
+      "bio": "i am devloper"
+    },
+    {
+      "id": "da73",
+      "uid": "uqlmuCqR4fgSimwMfHWPhIDXaU33",
+      "email": "irahulkv@gmail.com",
       "name": "Rahul Kumar",
-      "email": "rahul@example.com",
-      "avatar": "https://cdn.jsdelivr.net/gh/faker-js/assets-person-portrait/male/512/98.jpg",
-      "bio": "Frontend developer passionate about React.",
-      "githubLink": "https://github.com/rahul-devhub",
-      "skills": ["React", "JavaScript", "TailwindCSS"]
+      "avatar": "https://ui-avatars.com/api/?name=Rahul%20Kumar",
+      "githubLink": "https://github.com/irahulkv",
+      "location": "nodia",
+      "title": "web dev",
+      "bio": "eas",
+      "skills": [
+        "asdf",
+        "asdfasdf"
+      ]
     },
     {
-      "id": 2,
-      "name": "Priya Sharma",
-      "email": "priya@example.com",
-      "avatar": "https://cdn.jsdelivr.net/gh/faker-js/assets-person-portrait/female/512/70.jpg",
-      "bio": "Backend developer experienced with Node.js and MongoDB.",
-      "githubLink": "https://github.com/priyasharma",
-      "skills": ["Node.js", "TypeScript", "MongoDB"]
+      "id": "ff5c",
+      "uid": "kiJCdYewn8TXXWg3SFMkcOpnkaZ2",
+      "email": "iiphonenews01@gmail.com",
+      "name": "iphone newsy",
+      "avatar": "https://ui-avatars.com/api/?name=iphone%20newsy",
+      "githubLink": "https://github.com/iiphonenews01",
+      "location": "belgium",
+      "title": "laravel developer",
+      "bio": "i am laravel developer",
+      "skills": [
+        "laravel",
+        "javascript"
+      ]
     },
     {
-      "id": 3,
-      "name": "Aman Verma",
-      "email": "aman@example.com",
-      "avatar": "https://avatars.githubusercontent.com/u/11580597",
-      "bio": "Fullstack developer working with Vue and Firebase.",
-      "githubLink": "https://github.com/amanverma",
-      "skills": ["Vue", "Firebase", "CSS"]
+      "id": "0386",
+      "uid": "KlssJ4cVKsYMXOBGv6jfEPEkLVw2",
+      "email": "rahull.kkummar17@gmail.com",
+      "name": "Rahul Kumar",
+      "avatar": "https://ui-avatars.com/api/?name=Rahul%20Kumar",
+      "githubLink": "https://github.com/rahull.kkummar17",
+      "location": "new town",
+      "title": "flutter developer",
+      "bio": "i am a flutter developer",
+      "skills": [
+        "flutter",
+        "javascript"
+      ]
     },
     {
-      "id": 4,
-      "name": "Sneha Kapoor",
-      "email": "sneha@example.com",
-      "avatar": "https://cdn.jsdelivr.net/gh/faker-js/assets-person-portrait/female/512/4.jpg",
-      "bio": "Mobile app developer specializing in React Native.",
-      "githubLink": "https://github.com/snehakapoor",
-      "skills": ["React Native", "Expo", "TypeScript"]
+      "id": "1f2f",
+      "uid": "gehVaDHFhnYkxKQpQYnf8pY3mZx2",
+      "name": "rahul Dev",
+      "email": "irahul@gmail.com",
+      "avatar": "https://ui-avatars.com/api/?name=rahul%20Dev",
+      "skills": [
+        "flutter",
+        "tailwind"
+      ],
+      "githubLink": "https://github.com/irahul",
+      "location": "Noida",
+      "title": "flutter develoepr",
+      "bio": "fresher developer"
     },
     {
-      "id": 5,
-      "name": "Rajesh Singh",
-      "email": "rajesh@example.com",
-      "avatar": "https://cdn.jsdelivr.net/gh/faker-js/assets-person-portrait/male/512/41.jpg",
-      "bio": "DevOps enthusiast working with Docker and Kubernetes.",
-      "githubLink": "https://github.com/rajeshsingh",
-      "skills": ["Docker", "Kubernetes", "CI/CD"]
+      "id": "db38",
+      "uid": "0gegCc1OKxP5Lo3Reyhc9wqe4Zm2",
+      "name": "prashant dube",
+      "email": "prashantdube@gmail.com",
+      "avatar": "https://ui-avatars.com/api/?name=prashant%20dube",
+      "skills": [
+        "java",
+        "paython"
+      ],
+      "githubLink": "https://github.com/prashantdube",
+      "location": "Bangalore",
+      "title": "dev",
+      "bio": "3 years  developer"
     },
     {
-      "id": 6,
-      "name": "Neha Yadav",
-      "email": "neha@example.com",
-      "avatar": "https://cdn.jsdelivr.net/gh/faker-js/assets-person-portrait/female/512/17.jpg",
-      "bio": "UX/UI designer focused on user-centered design.",
-      "githubLink": "https://github.com/nehayadav",
-      "skills": ["Figma", "Sketch", "Adobe XD"]
-    },
-    {
-      "id": 7,
-      "name": "Ankit Mehra",
-      "email": "ankit@example.com",
-      "avatar": "https://cdn.jsdelivr.net/gh/faker-js/assets-person-portrait/male/512/62.jpg",
-      "bio": "Backend developer with Django and PostgreSQL expertise.",
-      "githubLink": "https://github.com/ankitmehra",
-      "skills": ["Django", "PostgreSQL", "REST APIs"]
-    },
-    {
-      "id": 8,
-      "name": "Divya Nair",
-      "email": "divya@example.com",
-      "avatar": "https://cdn.jsdelivr.net/gh/faker-js/assets-person-portrait/female/512/22.jpg",
-      "bio": "Frontend developer skilled in Angular and RxJS.",
-      "githubLink": "https://github.com/divyanair",
-      "skills": ["Angular", "RxJS", "SASS"]
-    },
-    {
-      "id": 9,
-      "name": "Karan Patel",
-      "email": "karan@example.com",
-      "avatar": "https://cdn.jsdelivr.net/gh/faker-js/assets-person-portrait/male/512/90.jpg",
-      "bio": "Java developer working with Spring Boot and Hibernate.",
-      "githubLink": "https://github.com/karanpatel",
-      "skills": ["Java", "Spring Boot", "Hibernate"]
-    },
-    {
-      "id": 10,
-      "name": "Megha Joshi",
-      "email": "megha@example.com",
-      "avatar": "https://cdn.jsdelivr.net/gh/faker-js/assets-person-portrait/female/512/89.jpg",
-      "bio": "Data scientist building ML models in Python.",
-      "githubLink": "https://github.com/meghajoshi",
-      "skills": ["Python", "Pandas", "scikit-learn"]
-    },
-    {
-      "id": 11,
-      "name": "Tanvi Mishra",
-      "email": "tanvi@example.com",
-      "avatar": "https://cdn.jsdelivr.net/gh/faker-js/assets-person-portrait/female/512/41.jpg",
-      "bio": "Frontend engineer with a love for clean CSS architecture.",
-      "githubLink": "https://github.com/tanvimishra",
-      "skills": ["HTML", "CSS", "Styled Components"]
-    },
-    {
-      "id": 12,
-      "name": "Mohit Rathi",
-      "email": "mohit@example.com",
-      "avatar": "https://cdn.jsdelivr.net/gh/faker-js/assets-person-portrait/male/512/52.jpg",
-      "bio": "Cloud-native developer working with AWS and Terraform.",
-      "githubLink": "https://github.com/mohitrathi",
-      "skills": ["AWS", "Terraform", "Lambda"]
-    },
-    {
-      "id": 13,
-      "name": "Simran Gupta",
-      "email": "simran@example.com",
-      "avatar": "https://cdn.jsdelivr.net/gh/faker-js/assets-person-portrait/female/512/11.jpg",
-      "bio": "Product-focused developer building accessible UIs.",
-      "githubLink": "https://github.com/simrangupta",
-      "skills": ["Accessibility", "React", "Storybook"]
-    },
-    {
-      "id": 14,
-      "name": "Ravi Shankar",
-      "email": "ravi@example.com",
-      "avatar": "https://cdn.jsdelivr.net/gh/faker-js/assets-person-portrait/male/512/11.jpg",
-      "bio": "System architect with focus on microservices and event-driven systems.",
-      "githubLink": "https://github.com/ravishankar",
-      "skills": ["Kafka", "Microservices", "Go"]
-    },
-    {
-      "id": 15,
-      "name": "Aisha Khan",
-      "email": "aisha@example.com",
-      "avatar": "https://cdn.jsdelivr.net/gh/faker-js/assets-person-portrait/female/512/51.jpg",
-      "bio": "AI/ML engineer working with TensorFlow and NLP.",
-      "githubLink": "https://github.com/aishakhan",
-      "skills": ["TensorFlow", "NLP", "Python"]
-    },
-    {
-      "id": 16,
-      "name": "Yash Desai",
-      "email": "yash@example.com",
-      "avatar": "https://cdn.jsdelivr.net/gh/faker-js/assets-person-portrait/male/512/19.jpg",
-      "bio": "Security-focused developer building zero-trust systems.",
-      "githubLink": "https://github.com/yashdesai",
-      "skills": ["OAuth", "OWASP", "ZAP"]
-    },
-    {
-      "id": 17,
-      "name": "Isha Jain",
-      "email": "isha@example.com",
-      "avatar": "https://cdn.jsdelivr.net/gh/faker-js/assets-person-portrait/female/512/95.jpg",
-      "bio": "Frontend developer passionate about performance and accessibility.",
-      "githubLink": "https://github.com/ishajain",
-      "skills": ["Lighthouse", "React", "ARIA"]
-    },
-    {
-      "id": 18,
-      "name": "Rohit Agarwal",
-      "email": "rohit@example.com",
-      "avatar": "https://cdn.jsdelivr.net/gh/faker-js/assets-person-portrait/male/512/73.jpg",
-      "bio": "Cross-platform developer working with Flutter and Dart.",
-      "githubLink": "https://github.com/rohitagarwal",
-      "skills": ["Flutter", "Dart", "Firebase"]
-    },
-    {
-      "id": 19,
-      "name": "Shweta Das",
-      "email": "shweta@example.com",
-      "avatar": "https://cdn.jsdelivr.net/gh/faker-js/assets-person-portrait/female/512/80.jpg",
-      "bio": "Creative technologist blending code and design.",
-      "githubLink": "https://github.com/shwetadas",
-      "skills": ["Three.js", "CSS Art", "WebGL"]
-    },
-    {
-      "id": 20,
-      "name": "Deepak Rao",
-      "email": "deepak@example.com",
-      "avatar": "https://cdn.jsdelivr.net/gh/faker-js/assets-person-portrait/male/512/18.jpg",
-      "bio": "Blockchain developer working on smart contracts.",
-      "githubLink": "https://github.com/deepakrao",
-      "skills": ["Solidity", "Ethereum", "Hardhat"]
+      "id": "d948",
+      "uid": "7Zq0RnTdsZds8bNbfZibh6USPP43",
+      "name": "Rahul Kumar",
+      "email": "rahul@gmail.com",
+      "avatar": "https://ui-avatars.com/api/?name=Rahul%20Kumar",
+      "skills": [
+        "rah",
+        "asdfsadf",
+        "asdf"
+      ],
+      "githubLink": "https://github.com/rahul",
+      "location": "noida",
+      "title": "devloeper",
+      "bio": "i am a developer"
     }
   ],
   "blogs": [
-    { "id": 1, "authorId": 1, "title": "Mastering React for Scalable UI", "content": "In this blog, we explore advanced component patterns...", "date": "2025-05-10" },
-    { "id": 2, "authorId": 2, "title": "Why TypeScript Improves Your Backend Code", "content": "TypeScript helps you catch bugs earlier...", "date": "2025-06-01" },
-    { "id": 3, "authorId": 3, "title": "Firebase Auth in 10 Minutes", "content": "Getting started with Firebase Auth is easier than ever...", "date": "2025-06-15" },
-    { "id": 4, "authorId": 4, "title": "Building UI with React Native", "content": "Create beautiful mobile apps with React Native...", "date": "2025-06-18" },
-    { "id": 5, "authorId": 5, "title": "Docker Tips for Developers", "content": "Efficient ways to containerize your projects...", "date": "2025-06-20" },
-    { "id": 6, "authorId": 6, "title": "Figma for Developers", "content": "Bridging the gap between design and development...", "date": "2025-06-22" },
-    { "id": 7, "authorId": 7, "title": "REST APIs with Django", "content": "Creating scalable APIs using Django REST Framework...", "date": "2025-06-23" },
-    { "id": 8, "authorId": 8, "title": "RxJS Observables Deep Dive", "content": "Advanced patterns in Angular's reactive programming...", "date": "2025-06-24" },
-    { "id": 9, "authorId": 9, "title": "Spring Boot Starter Guide", "content": "An introduction to bootstrapping with Spring Boot...", "date": "2025-06-25" },
-    { "id": 10, "authorId": 10, "title": "Python Pipelines for ML", "content": "Building clean ML pipelines using sklearn and pandas...", "date": "2025-06-26" }
+    {
+      "id": 1,
+      "authorId": 1,
+      "title": "Mastering React for Scalable UI",
+      "content": "In this blog, we explore advanced component patterns...",
+      "date": "2025-05-10"
+    }
   ],
   "comments": [
-    { "id": 1, "blogId": 1, "author": "Priya Sharma", "message": "Great insights on scalable React components!" },
-    { "id": 2, "blogId": 2, "author": "Aman Verma", "message": "Very helpful explanation about TypeScript. Thanks!" },
-    { "id": 3, "blogId": 3, "author": "Rahul Kumar", "message": "Nice walkthrough on Firebase setup." },
-    { "id": 4, "blogId": 4, "author": "Megha Joshi", "message": "Excited to try this on my next app." },
-    { "id": 5, "blogId": 5, "author": "Sneha Kapoor", "message": "Super useful Docker tips!" },
-    { "id": 6, "blogId": 6, "author": "Divya Nair", "message": "Figma really is a great tool for devs." },
-    { "id": 7, "blogId": 7, "author": "Rajesh Singh", "message": "Clear explanation on Django REST!" },
-    { "id": 8, "blogId": 8, "author": "Ankit Mehra", "message": "RxJS finally makes more sense now." },
-    { "id": 9, "blogId": 9, "author": "Neha Yadav", "message": "Spring Boot basics nicely covered." },
-    { "id": 10, "blogId": 10, "author": "Karan Patel", "message": "Great tips for structuring ML projects." }
+    {
+      "id": 1,
+      "blogId": 1,
+      "author": "Priya Sharma",
+      "message": "Great insights on scalable React components!"
+    }
   ]
 }

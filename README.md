@@ -10,7 +10,6 @@ Features:
 - Blog API integration via JSON Server
 - Protected routes with persistent login
 - Responsive design with TailwindCSS
-- Firestore integration for storing user profile data (optional)
 
 Tech Stack:
 - Frontend: React + Vite
@@ -37,7 +36,7 @@ src/
 
 Setup Instructions:
 1. Clone the repository
-git clone https://github.com/your-username/devhub.git
+git clone https://github.com/irahulk01/devHub.git
 cd devhub
 
 2. Install dependencies
@@ -63,16 +62,6 @@ Firebase Authentication:
 - Enable Email/Password and Google in Firebase Console under Authentication.
 - Store extended user profile in Firestore: /users/{uid}
 - Use uid for secure access control and queries
-
-Firestore Rules (Optional):
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /users/{userId} {
-      allow read, write: if request.auth.uid == userId;
-    }
-  }
-}
 
 Authentication Flow:
 - Login/Register stores token

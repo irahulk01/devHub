@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
   createUserWithEmailAndPassword,
@@ -9,66 +9,127 @@ import {
 } from "firebase/auth";
 import { auth, googleProvider } from "../firebase";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import * as yup from "yup";
+import { toast } from "react-toastify";
+import { getFirebaseErrorMessage } from "../utils/firebaseErrorMessages";
 
 const schema = yup.object({
+  name: yup.string().required("Full name is required").min(3),
   email: yup.string().email("Invalid email").required("Email is required"),
   password: yup
     .string()
     .min(6, "Password must be at least 6 characters")
     .required("Password is required"),
+  skills: yup
+    .array()
+    .of(yup.string().required("Skill is required"))
+    .min(2, "Please enter at least 2 skills"),
 });
 
 export default function Register() {
   const navigate = useNavigate();
-  const [firebaseError, setFirebaseError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [newSkill, setNewSkill] = useState("");
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
-  } = useForm({ resolver: yupResolver(schema) });
+    control,
+    watch,
+    setError,
+    formState: { errors, isSubmitted },
+  } = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+      skills: [],
+    },
+  });
 
-  // Handle Google Redirect Result (if popup was blocked)
-  useEffect(() => {
-    getRedirectResult(auth)
-      .then((result) => {
-        if (result?.user) {
-          navigate("/");
+  const skills = watch("skills");
+
+  const { fields, append, remove } = useFieldArray({ control, name: "skills" });
+
+useEffect(() => {
+  getRedirectResult(auth)
+    .then(async (result) => {
+      if (result?.user) {
+        const isNew = await saveUserToDB(result.user);
+        if (isNew) {
+          navigate("/profile/edit", { state: { fromGoogle: true } });
+        } else {
+          navigate(`/developers/${result.user.uid}`);
         }
-      })
-      .catch((err) => {
-        console.error(err);
-        setFirebaseError("Google signup failed. Try again.");
-      });
-  }, []);
+      }
+    })
+    .catch((err) => {
+    });
+}, []);
+
+const saveUserToDB = async (user, name = "", skills = []) => {
+  try {
+    const res = await axios.get(`${import.meta.env.VITE_API}/developers?uid=${user.uid}`);
+    if (res.data.length > 0) {
+      return false; // Already exists
+    }
+
+    await axios.post(`${import.meta.env.VITE_API}/developers`, {
+      uid: user.uid,
+      name: name || "Anonymous",
+      email: user.email,
+      avatar: user.photoURL || `https://ui-avatars.com/api/?name=${name || "User"}`,
+      skills,
+    });
+
+    return true; // New user added
+  } catch (err) {
+    return false;
+  }
+};
 
   const onSubmit = async (data) => {
-    setFirebaseError("");
     try {
-      await createUserWithEmailAndPassword(auth, data.email, data.password);
-      navigate("/");
-    } catch (err) {
-      if (err.code === "auth/email-already-in-use") {
-        setFirebaseError("Email is already in use. Try logging in.");
+      const check = await axios.get(`${import.meta.env.VITE_API}/developers?email=${data.email}`);
+      if (check.data.length > 0) {
+        setError("email", { type: "manual", message: "Email already exists. Please use a different one." });
+        return;
+      }
+
+      const { user } = await createUserWithEmailAndPassword(
+        auth,
+        data.email,
+        data.password
+      );
+
+      const saved = await saveUserToDB(user, data.name, data.skills);
+      if (saved) {
+        navigate("/profile/edit", { state: { fromGoogle: true } });
       } else {
-        setFirebaseError("Something went wrong. Please try again.");
+      }
+    } catch (err) {
+      console.error("Registration error:", err);
+      if (err.code === "auth/email-already-in-use") {
+        setError("email", { type: "manual", message: "Email already in use." });
+      } else if (err.code === "auth/weak-password") {
+        setError("password", { type: "manual", message: "Password must be at least 6 characters." });
+      } else {
+        setError("email", { type: "manual", message: getFirebaseErrorMessage(err.code || "auth/unknown") });
       }
     }
   };
 
-// Updated Google Signup with Popup fallback to Redirect
   const handleGoogleSignup = async () => {
     try {
-      await signInWithPopup(auth, googleProvider);
+      const result = await signInWithPopup(auth, googleProvider);
+      await saveUserToDB(result.user, result.user.displayName || "", []);
       navigate("/");
     } catch (popupError) {
-      console.warn("Popup blocked. Using redirect fallback.");
       try {
         await signInWithRedirect(auth, googleProvider);
       } catch (redirectError) {
-        setFirebaseError("Google signup failed. Try again.");
       }
     }
   };
@@ -80,18 +141,39 @@ export default function Register() {
           Create Your Account
         </h2>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          noValidate
+          className="space-y-5"
+        >
+          {/* Full Name */}
           <div>
-            <label className="block mb-1 text-sm font-medium text-gray-700">
-              Email
+            <label className="block text-sm mb-1 text-gray-700">
+              Full Name
             </label>
+            <input
+              type="text"
+              {...register("name")}
+              placeholder="Your full name"
+              className={`w-full px-4 py-2 border ${
+                errors.name ? "border-red-500" : "border-gray-300"
+              } text-gray-800 rounded`}
+            />
+            {errors.name && (
+              <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
+            )}
+          </div>
+
+          {/* Email */}
+          <div>
+            <label className="block text-sm mb-1 text-gray-700">Email</label>
             <input
               type="email"
               {...register("email")}
+              placeholder="your@email.com"
               className={`w-full px-4 py-2 border ${
                 errors.email ? "border-red-500" : "border-gray-300"
-              } text-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500`}
-              placeholder="your@email.com"
+              } text-gray-800 rounded`}
             />
             {errors.email && (
               <p className="text-red-500 text-sm mt-1">
@@ -100,18 +182,17 @@ export default function Register() {
             )}
           </div>
 
+          {/* Password */}
           <div>
-            <label className="block mb-1 text-sm font-medium text-gray-700">
-              Password
-            </label>
+            <label className="block text-sm mb-1 text-gray-700">Password</label>
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
                 {...register("password")}
+                placeholder="At least 6 characters"
                 className={`w-full px-4 py-2 border ${
                   errors.password ? "border-red-500" : "border-gray-300"
-                } text-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500`}
-                placeholder="At least 6 characters"
+                } text-gray-800 rounded`}
               />
               <span
                 onClick={() => setShowPassword((prev) => !prev)}
@@ -127,11 +208,65 @@ export default function Register() {
             )}
           </div>
 
-          {firebaseError && (
-            <div className="bg-red-100 text-red-700 p-2 rounded text-sm">
-              {firebaseError}
+          {/* Skills */}
+          <div>
+            <label className="block text-sm mb-1 text-gray-700">Skills</label>
+
+            {/* Skill Tags */}
+            <div className="flex flex-wrap gap-2 mb-2">
+              {fields.map((field, index) => (
+                <div
+                  key={field.id}
+                  className="relative group bg-indigo-600 text-white px-3 py-1 rounded-full text-sm font-medium shadow"
+                >
+                  {skills[index]}
+                  {skills.length > 2 && (
+                    <button
+                      type="button"
+                      onClick={() => remove(index)}
+                      className="absolute -top-1.5 -right-1.5 bg-red-500 text-white w-4 h-4 rounded-full text-xs flex items-center justify-center group-hover:opacity-100 opacity-0 transition-opacity"
+                      title="Remove"
+                    >
+                      ×
+                    </button>
+                  )}
+                </div>
+              ))}
             </div>
-          )}
+
+            {/* Skill Input */}
+            <input
+              type="text"
+              placeholder="Add a skill and press Enter"
+              value={newSkill}
+              onChange={(e) => setNewSkill(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && newSkill.trim()) {
+                  e.preventDefault();
+                  if (!skills.includes(newSkill.trim())) {
+                    append(newSkill.trim());
+                    setNewSkill("");
+                  }
+                }
+              }}
+              className="w-full px-3 py-2 border border-gray-300 rounded text-gray-800"
+            />
+
+            {Array.isArray(errors.skills) &&
+              errors.skills.some((e) => e?.message) && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.skills.find((e) => e?.message)?.message}
+                </p>
+              )}
+
+            <button
+              type="button"
+              onClick={() => append("")}
+              className="text-indigo-600 text-sm mt-2 hover:underline"
+            >
+              + Add another skill
+            </button>
+          </div>
 
           <button
             type="submit"

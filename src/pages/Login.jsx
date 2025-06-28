@@ -10,13 +10,18 @@ import {
 import { auth, googleProvider } from "../firebase";
 import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
+import { getFirebaseErrorMessage } from "../utils/firebaseErrorMessages";
+import axios from "axios";
 
 const schema = yup.object({
-  email: yup.string().email("Invalid email").required("Email is required"),
+  email: yup
+    .string()
+    .required("Email is required")
+    .email("Please enter a valid email address"),
   password: yup
     .string()
-    .min(6, "Password must be at least 6 characters")
-    .required("Password is required"),
+    .required("Password is required")
+    .min(6, "Password must be at least 6 characters"),
 });
 
 export default function Login() {
@@ -30,19 +35,25 @@ export default function Login() {
     formState: { errors },
   } = useForm({ resolver: yupResolver(schema) });
 
-  // Handle redirect result if popup is blocked
-  useEffect(() => {
-    getRedirectResult(auth)
-      .then((result) => {
-        if (result?.user) {
+  //  Only handle redirect once on page load
+useEffect(() => {
+  getRedirectResult(auth)
+    .then(async (result) => {
+      if (result?.user) {
+        const uid = result.user.uid;
+        const res = await axios.get(`${import.meta.env.VITE_API}/developers?uid=${uid}`);
+        if (res.data.length > 0) {
           navigate("/");
+        } else {
+          navigate("/profile/edit", { state: { fromGoogle: true } });
         }
-      })
-      .catch((err) => {
-        setFirebaseError("Google login failed. Try again.");
-        console.error(err);
-      });
-  }, []);
+      }
+    })
+    .catch((err) => {
+      const message = getFirebaseErrorMessage(err.code);
+      setFirebaseError(message);
+    });
+}, []);
 
   const onSubmit = async (data) => {
     setFirebaseError("");
@@ -50,46 +61,66 @@ export default function Login() {
       await signInWithEmailAndPassword(auth, data.email, data.password);
       navigate("/");
     } catch (err) {
-      if (err.code === "auth/user-not-found" || err.code === "auth/wrong-password") {
-        setFirebaseError("Invalid email or password.");
-      } else {
-        setFirebaseError("Something went wrong. Please try again.");
-      }
+      const message = getFirebaseErrorMessage(err.code);
+      setFirebaseError(message);
     }
   };
 
-  const handleGoogleLogin = async () => {
-    try {
-      await signInWithPopup(auth, googleProvider);
-      navigate("/");
-    } catch (popupError) {
-      console.warn("Popup blocked, using redirect fallback.");
-      try {
-        await signInWithRedirect(auth, googleProvider);
-      } catch (redirectError) {
-        setFirebaseError("Google login failed. Try again.");
-        console.error(redirectError);
-      }
+const handleGoogleLogin = async () => {
+  try {
+    const result = await signInWithPopup(auth, googleProvider);
+    const uid = result.user.uid;
+
+    const res = await axios.get(`${import.meta.env.VITE_API}/developers?uid=${uid}`);
+    if (res.data.length > 0) {
+      navigate("/"); // Profile exists
+    } else {
+      // First time login, collect profile info
+      navigate("/profile/edit", { state: { fromGoogle: true } });
     }
+  } catch (popupError) {
+    // fallback
+    await signInWithRedirect(auth, googleProvider);
+  }
+};
+
+  const clearFirebaseError = () => {
+    if (firebaseError) setFirebaseError("");
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900">
       <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-md">
-        <h2 className="text-3xl font-bold text-indigo-700 text-center mb-6">Login to DevHub</h2>
+        <h2 className="text-3xl font-bold text-indigo-700 text-center mb-6">
+          Login to DevHub
+        </h2>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        {firebaseError && (
+          <div
+            className="bg-red-100 text-red-700 p-2 rounded text-sm text-center mb-4"
+            title={firebaseError}
+          >
+            {firebaseError.length > 100
+              ? `${firebaseError.slice(0, 100)}...`
+              : firebaseError}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5">
           <div>
             <label className="block mb-1 text-sm font-medium text-gray-700">Email</label>
             <input
               type="email"
               placeholder="you@example.com"
               {...register("email")}
+              onFocus={clearFirebaseError}
               className={`w-full px-4 py-2 border ${
                 errors.email ? "border-red-500" : "border-gray-300"
               } text-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500`}
             />
-            {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
+            {errors.email && (
+              <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+            )}
           </div>
 
           <div>
@@ -99,6 +130,7 @@ export default function Login() {
                 type={showPassword ? "text" : "password"}
                 placeholder="Your password"
                 {...register("password")}
+                onFocus={clearFirebaseError}
                 className={`w-full px-4 py-2 border ${
                   errors.password ? "border-red-500" : "border-gray-300"
                 } text-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500`}
@@ -114,10 +146,6 @@ export default function Login() {
               <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
             )}
           </div>
-
-          {firebaseError && (
-            <div className="bg-red-100 text-red-700 p-2 rounded text-sm">{firebaseError}</div>
-          )}
 
           <button
             type="submit"
