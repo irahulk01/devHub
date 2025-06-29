@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
@@ -11,28 +11,51 @@ export default function CreateBlogPost() {
   const navigate = useNavigate();
   const location = useLocation();
   const author = location.state?.author;
+  const blog = location.state?.blog;
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-    reset
-  } = useForm();
+    reset,
+    setValue
+  } = useForm({
+    defaultValues: {
+      title: blog?.title || "",
+      content: blog?.content || ""
+    }
+  });
+
+  useEffect(() => {
+    if (blog) {
+      setValue("title", blog.title);
+      setValue("content", blog.content);
+    }
+  }, [blog]);
 
   const onSubmit = async (data) => {
-    const newBlog = {
+    const payload = {
       ...data,
-      authorId: author?.uid,
+      authorId: blog?.authorId || author?.uid,
       date: new Date().toLocaleString()
     };
 
     try {
-      await axios.post(`${import.meta.env.VITE_API}/blogs`, newBlog);
+      if (blog?.id) {
+        await axios.put(`${import.meta.env.VITE_API}/blogs/${blog.id}`, {
+          ...blog,
+          ...payload
+        });
+        toast.success("Blog updated successfully!");
+      } else {
+        await axios.post(`${import.meta.env.VITE_API}/blogs`, payload);
+        toast.success("Blog posted successfully!");
+      }
+
       reset();
-      toast.success("Blog posted successfully!");
-      navigate(`/developers/${author?.uid}`);
+      navigate(`/developers/${payload.authorId}`);
     } catch (err) {
-      toast.error("Failed to create blog. Please try again.");
+      toast.error("Failed to save blog. Please try again.");
     }
   };
 
@@ -49,7 +72,7 @@ export default function CreateBlogPost() {
       }`}
     >
       <h1 className="text-2xl font-bold mb-4 text-indigo-600 dark:text-indigo-300">
-        Create Blog Post
+        {blog ? "Edit Blog Post" : "Create Blog Post"}
       </h1>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
@@ -90,7 +113,7 @@ export default function CreateBlogPost() {
           type="submit"
           className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded font-medium transition"
         >
-          Publish
+          {blog ? "Update" : "Publish"}
         </button>
       </form>
       <ToastContainer position="top-center" />

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, lazy, Suspense } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useTheme } from "../context/ThemeContext";
 import { useForm } from "react-hook-form";
@@ -11,6 +11,7 @@ export default function BlogDetail() {
   const [blog, setBlog] = useState(null);
   const [loading, setLoading] = useState(true);
   const { theme } = useTheme();
+  const navigate = useNavigate();
 
   const [authorInfo, setAuthorInfo] = useState(null);
 
@@ -81,6 +82,9 @@ export default function BlogDetail() {
   if (loading) return <div className="p-6">Loading blog...</div>;
   if (!blog) return <div className="p-6 text-red-500">Blog not found.</div>;
 
+  const loggedInUser = JSON.parse(localStorage.getItem("devhub-user"));
+  const isAuthor = String(loggedInUser?.uid) === String(blog?.authorId);
+
   return (
     <main className={`min-h-screen px-4 py-8 transition-colors duration-300 ${
       theme === "dark" ? "bg-gray-950 text-gray-100" : "bg-gray-50 text-gray-800"
@@ -96,6 +100,16 @@ export default function BlogDetail() {
         >
           ← Back
         </button>
+        {isAuthor && (
+          <div className="mb-4 text-right">
+            <button
+              onClick={() => navigate(`/createBlogPost`, { state: { blog } })}
+              className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm px-4 py-2 rounded shadow transition"
+            >
+              ✏️ Edit Blog
+            </button>
+          </div>
+        )}
         <h1 className="text-3xl font-bold text-indigo-700 dark:text-indigo-300 mb-4">
           {blog.title}
         </h1>
@@ -115,7 +129,13 @@ export default function BlogDetail() {
           {blog.date}
         </p>
         <article className="prose dark:prose-invert max-w-none text-base leading-relaxed">
-          {blog.content}
+          <pre
+            className={`whitespace-pre-wrap overflow-x-auto p-4 rounded bg-gray-100 dark:bg-gray-800 text-sm ${
+              theme === "dark" ? "text-white" : "text-gray-800"
+            }`}
+          >
+            <code>{blog.content}</code>
+          </pre>
         </article>
         <section className="mt-10">
           <h2 className="text-xl font-semibold mb-3 border-b pb-1 border-indigo-300 dark:border-pink-600">
