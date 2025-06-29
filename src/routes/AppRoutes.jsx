@@ -10,12 +10,14 @@ const DeveloperProfile = lazy(() => import("../pages/DeveloperProfile"));
 const DeveloperEditProfile = lazy(() =>
   import("../pages/DeveloperEditProfile")
 );
+const BlogsByAuthor = lazy(() => import("../pages/BlogsDetails"));
+const CreateBlogPost = lazy(() => import("../components/CreateBlogPost"));
 
 const NotFound = lazy(() => import("../pages/NotFound"));
 
 export default function AppRoutes() {
   return (
-   <Suspense fallback={<FullPageLoader />}>
+    <Suspense fallback={<FullPageLoader />}>
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -44,7 +46,22 @@ export default function AppRoutes() {
             </PrivateRoute>
           }
         />
-
+        <Route
+          path="/developers/:authorId/blogs/:id"
+          element={
+            <PrivateRoute>
+              <BlogsByAuthor />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/createBlogPost"
+          element={
+            <PrivateRoute>
+              <CreateBlogPost />
+            </PrivateRoute>
+          }
+        />
         {/* 404 fallback route */}
         <Route path="*" element={<NotFound />} />
       </Routes>
