@@ -13,3 +13,7 @@ export const fetchDeveloperByUID = (uid) => {
 export const fetchBlogsByAuthorId = (authorId) => {
   return axios.get(`${API_BASE}/blogs?authorId=${authorId}`);
 };
+
+export const deleteBlog = (blogId) => {
+  return axios.delete(`${API_BASE}/blogs/${blogId}`);
+};

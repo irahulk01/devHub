@@ -211,12 +211,6 @@
       "date": "29/06/2025, 16:21:34"
     },
     {
-      "id": "76b6",
-      "title": "new blog post of react",
-      "content": "hie ther i am cerateing new blog updated",
-      "date": "29/06/2025, 23:20:35"
-    },
-    {
       "id": "602d",
       "title": "Understanding Closures in JavaScript",
       "content": "Closures are one of the most powerful features of JavaScript. A closure is created when a function is defined inside another function, and the inner function remembers the variables from the outer function even after the outer function has finished executing.\n\nExample:\nfunction outerFunction() {\n  let counter = 0;\n\n  return function innerFunction() {\n    counter++;\n    console.log(counter);\n  };\n}\n\nconst increment = outerFunction();\nincrement(); // 1\nincrement(); // 2\n\n",
@@ -404,6 +398,14 @@
       "avatar": "https://ui-avatars.com/api/?name=Rahul%20Kumar",
       "message": "love your blogs",
       "date": "29/06/2025, 15:25:06"
+    },
+    {
+      "id": "5e74",
+      "blogId": "602d",
+      "author": "Rahul Kumar",
+      "avatar": "https://ui-avatars.com/api/?name=Rahul%20Kumar",
+      "message": "best content on closure i have seen, thanks for sharing!",
+      "date": "29/06/2025, 23:37:52"
     }
   ]
 }

@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
-import BlogList from "../components/BlogList.jsx";
-import { fetchDeveloperByUID } from "../services/apiServices";
+import BlogList from "../components/BlogList";
+import { fetchDeveloperByUID, deleteBlog } from "../services/apiServices";
 
 export default function DeveloperProfile() {
   const { id } = useParams();
   const [developer, setDeveloper] = useState(null);
+  const [blogs, setBlogs] = useState([]);
   const navigate = useNavigate();
   const { theme } = useTheme();
 
@@ -17,6 +18,17 @@ export default function DeveloperProfile() {
       .then((res) => setDeveloper(res.data[0]))
       .catch((err) => console.error("Error loading developer", err));
   }, [id]);
+
+  const handleDeleteBlog = async (blogId) => {
+    if (!window.confirm("Are you sure you want to delete this blog?")) return;
+    try {
+      await deleteBlog(blogId);
+      // Optimistically remove blog from DOM without re-fetching
+      setBlogs(prev => prev.filter(blog => blog.id !== blogId));
+    } catch (error) {
+      console.error("Failed to delete blog", error);
+    }
+  };
 
   if (!developer) {
     return (
@@ -156,7 +168,7 @@ export default function DeveloperProfile() {
 
         {/* Blogs */}
         <section className="mt-10">
-          <BlogList authorId={developer.uid} />
+          <BlogList authorId={developer.uid} onDelete={handleDeleteBlog} isOwner={isOwnProfile} />
         </section>
       </div>
     </main>
