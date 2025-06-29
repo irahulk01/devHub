@@ -1,18 +1,21 @@
 import { Routes, Route } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import PrivateRoute from "./PrivateRoutes";
+import FullPageLoader from "../components/FullPageLoader";
 
 const Home = lazy(() => import("../pages/Home"));
 const Login = lazy(() => import("../pages/Login"));
 const Register = lazy(() => import("../pages/Register"));
 const DeveloperProfile = lazy(() => import("../pages/DeveloperProfile"));
-const DeveloperEditProfile = lazy(() => import("../pages/DeveloperEditProfile"));
+const DeveloperEditProfile = lazy(() =>
+  import("../pages/DeveloperEditProfile")
+);
 
 const NotFound = lazy(() => import("../pages/NotFound"));
 
 export default function AppRoutes() {
   return (
-    <Suspense fallback={<div className="p-4 text-white">Loading...</div>}>
+   <Suspense fallback={<FullPageLoader />}>
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />

@@ -2,41 +2,47 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useTheme } from "../context/ThemeContext";
 
 export default function Header() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [developer, setDeveloper] = useState(null);
   const [hovered, setHovered] = useState(false);
+  const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
     if (!user?.uid) return;
-
     axios
       .get(`${import.meta.env.VITE_API}/developers?uid=${user.uid}`)
-      .then((res) => {
-        setDeveloper(res.data[0]);
-      })
-      .catch(() => {
-        setDeveloper(null);
-      });
+      .then((res) => setDeveloper(res.data[0]))
+      .catch(() => setDeveloper(null));
   }, [user?.uid]);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", theme === "dark");
+  }, [theme]);
 
   if (!user) return null;
 
   const name = developer?.name?.trim();
   const avatar = developer?.avatar?.trim();
-
   const isNamedUser = Boolean(name);
 
   return (
-    <header className="flex justify-between items-center p-4 bg-gray-800 text-white relative">
-    <h1
-  className="text-lg font-bold cursor-pointer"
-  onClick={() => navigate("/")}
->
-  DevHub
-</h1>
+    <header
+      className={`flex justify-between items-center p-4 border-b relative transition-all duration-300 ${
+        theme === "dark"
+          ? "bg-gray-800 text-white border-gray-700"
+          : "bg-white text-black border-gray-200"
+      }`}
+    >
+      <h1
+        className="text-lg font-bold cursor-pointer"
+        onClick={() => navigate("/")}
+      >
+        DevHub
+      </h1>
 
       <div
         className="relative flex items-center gap-4"
@@ -48,7 +54,9 @@ export default function Header() {
           <img
             src={
               avatar ||
-              `https://ui-avatars.com/api/?name=${name || "User"}&background=random`
+              `https://ui-avatars.com/api/?name=${
+                name || "User"
+              }&background=random`
             }
             alt="Profile"
             className={`w-9 h-9 rounded-full border-2 ${
@@ -58,8 +66,6 @@ export default function Header() {
               if (isNamedUser) navigate(`/developers/${user.uid}`);
             }}
           />
-
-          {/* Edit on hover for unnamed users */}
           {!isNamedUser && hovered && (
             <span
               onClick={() => navigate(`/profile/edit?uid=${user.uid}`)}
@@ -69,6 +75,16 @@ export default function Header() {
             </span>
           )}
         </div>
+
+        {/* Theme Toggle */}
+        <button
+          onClick={() => {
+            toggleTheme();
+          }}
+          className="ml-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white text-xl px-3 py-1 rounded-full shadow-sm hover:scale-105 transition-transform"
+        >
+          {theme === "dark" ? "🌞" : "🌙"}
+        </button>
 
         {/* Logout */}
         <button

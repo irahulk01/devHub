@@ -6,6 +6,7 @@ import { auth } from "../firebase";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useTheme } from "../context/ThemeContext";
 
 export default function DeveloperEditProfile() {
   const storedUser = JSON.parse(localStorage.getItem("devhub-user"));
@@ -14,8 +15,24 @@ export default function DeveloperEditProfile() {
   const [newSkill, setNewSkill] = useState("");
   const location = useLocation();
   const navigate = useNavigate();
+  const { theme } = useTheme();
+  useEffect(() => {
+    const isDarkClassPresent = document.documentElement.classList.contains("dark");
+  }, [theme]);
   const developerFromState = location.state?.developer;
   const fromGoogle = location.state?.fromGoogle || false;
+
+  const inputClass = theme === "dark"
+    ? "w-full px-4 py-2 border rounded bg-gray-900 text-white border-gray-700"
+    : "w-full px-4 py-2 border rounded bg-white text-black border-gray-300";
+
+  const textareaClass = theme === "dark"
+    ? "w-full px-4 py-2 border rounded bg-gray-800 text-white border-gray-600"
+    : "w-full px-4 py-2 border rounded bg-white text-black border-gray-300";
+
+  const skillInputClass = theme === "dark"
+    ? "flex-1 px-3 py-2 border rounded bg-gray-900 text-white border-gray-600"
+    : "flex-1 px-3 py-2 border rounded bg-white text-black border-gray-300";
 
   const validationSchema = yup.object({
     name: yup
@@ -156,7 +173,13 @@ const onSubmit = async (data) => {
     );
 
   return (
-    <div className="max-w-2xl mx-auto mt-8 p-4 sm:p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md">
+  <div
+    className={`max-w-2xl mx-auto mt-8 p-4 sm:p-6 rounded-xl shadow-md border transition-colors duration-300 ${
+      theme === "dark"
+        ? "bg-gray-900 text-gray-100 border-gray-700"
+        : "bg-white text-gray-900 border-gray-300"
+    }`}
+  >
       <h2 className="text-xl sm:text-2xl font-semibold mb-4 text-indigo-700 dark:text-indigo-300">
         Edit Profile
       </h2>
@@ -172,13 +195,15 @@ const onSubmit = async (data) => {
           { name: "title", label: "Professional Title" },
         ].map(({ name, label }) => (
           <div key={name} className="col-span-1">
-            <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label className={`block mb-1 text-sm font-medium ${
+              theme === "dark" ? "text-gray-300" : "text-black"
+            }`}>
               {label}
             </label>
             <input
               type="text"
               {...register(name)}
-              className="w-full px-4 py-2 border rounded bg-white dark:bg-gray-700 dark:text-white border-gray-300 dark:border-gray-600"
+              className={inputClass}
             />
             {errors[name] && (
               <p className="text-red-500 text-sm mt-1">{errors[name]?.message}</p>
@@ -188,13 +213,15 @@ const onSubmit = async (data) => {
 
         {/* Bio */}
         <div className="md:col-span-2">
-          <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label className={`block mb-1 text-sm font-medium ${
+            theme === "dark" ? "text-gray-300" : "text-black"
+          }`}>
             Bio
           </label>
-          <textarea
+         <textarea
             rows={3}
             {...register("bio")}
-            className="w-full px-4 py-2 border rounded bg-white dark:bg-gray-700 dark:text-white border-gray-300 dark:border-gray-600"
+            className={textareaClass}
           />
           {errors.bio && (
             <p className="text-red-500 text-sm mt-1">{errors.bio.message}</p>
@@ -203,7 +230,9 @@ const onSubmit = async (data) => {
 
         {/* Skills */}
         <div className="md:col-span-2">
-          <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label className={`block mb-1 text-sm font-medium ${
+            theme === "dark" ? "text-gray-300" : "text-black"
+          }`}>
             Skills
           </label>
           <div className="flex flex-wrap gap-4 mb-4">
@@ -242,7 +271,7 @@ const onSubmit = async (data) => {
                   }
                 }
               }}
-              className="flex-1 px-3 py-2 border rounded bg-white dark:bg-gray-700 dark:text-white border-gray-300 dark:border-gray-600"
+              className={skillInputClass}
             />
             <button
               type="button"
