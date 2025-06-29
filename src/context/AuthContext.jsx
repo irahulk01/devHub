@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../firebase";
+import { fetchDeveloperByUID } from "../services/apiServices";
 
 const AuthContext = createContext();
 
@@ -11,8 +12,30 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
+        localStorage.setItem("firebase-user", JSON.stringify(currentUser));
         setUser(currentUser);
-        localStorage.setItem("devhub-user", JSON.stringify(currentUser));
+        fetchDeveloperByUID(currentUser.uid)
+          .then((res) => {
+            const dev = res.data?.[0];
+            if (dev) {
+              const cleanUser = {
+                uid: dev.uid,
+                email: dev.email || currentUser.email,
+                name: dev.name,
+                avatar: dev.avatar,
+                title: dev.title,
+              };
+              setUser(cleanUser);
+              localStorage.setItem("devhub-user", JSON.stringify(cleanUser));
+            } else {
+              setUser(null);
+              localStorage.removeItem("devhub-user");
+            }
+          })
+          .catch(() => {
+            setUser(null);
+            localStorage.removeItem("devhub-user");
+          });
       } else {
         setUser(null);
         localStorage.removeItem("devhub-user");
@@ -26,6 +49,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     signOut(auth);
     localStorage.removeItem("devhub-user");
+    localStorage.removeItem("firebase-user");
   };
 
   return (

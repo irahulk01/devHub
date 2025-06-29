@@ -97,9 +97,8 @@
       "email": "rahul@gmail.com",
       "avatar": "https://ui-avatars.com/api/?name=Rahul%20Kumar",
       "skills": [
-        "rah",
-        "asdfsadf",
-        "asdf"
+        "javaScript",
+        "React"
       ],
       "githubLink": "https://github.com/rahul",
       "location": "noida",
@@ -113,7 +112,110 @@
       "authorId": 1,
       "title": "Mastering React for Scalable UI",
       "content": "In this blog, we explore advanced component patterns...",
-      "date": "2025-05-10"
+      "date": "2025-05-10",
+      "timestamp": "2025-05-10T09:00:00.000Z"
+    },
+    {
+      "id": 2,
+      "authorId": "D3iaP8eGDoWSibJm4SvNuACwwAU2",
+      "title": "Understanding JavaScript Closures",
+      "content": "Closures are one of the most powerful features of JavaScript. They allow functions to access variables from an enclosing scope...",
+      "date": "2025-06-01",
+      "timestamp": "2025-06-01T09:00:00.000Z"
+    },
+    {
+      "id": 3,
+      "authorId": "D3iaP8eGDoWSibJm4SvNuACwwAU2",
+      "title": "React useState Hook Explained",
+      "content": "The useState hook lets you add state to functional components. This blog explains how to use it with simple examples...",
+      "date": "2025-06-03",
+      "timestamp": "2025-06-03T09:00:00.000Z"
+    },
+    {
+      "id": 4,
+      "authorId": "kiJCdYewn8TXXWg3SFMkcOpnkaZ2",
+      "title": "JavaScript Array Methods You Should Know",
+      "content": "JavaScript provides a rich set of methods to manipulate arrays. In this blog, we’ll go over map, filter, reduce and more...",
+      "date": "2025-06-05",
+      "timestamp": "2025-06-05T09:00:00.000Z"
+    },
+    {
+      "id": 5,
+      "authorId": "KlssJ4cVKsYMXOBGv6jfEPEkLVw2",
+      "title": "Getting Started with React",
+      "content": "React is a popular JavaScript library for building user interfaces. This blog walks you through setting up a React project...",
+      "date": "2025-06-07",
+      "timestamp": "2025-06-07T09:00:00.000Z"
+    },
+    {
+      "id": 6,
+      "authorId": "7Zq0RnTdsZds8bNbfZibh6USPP43",
+      "title": "Understanding Closures in JavaScript",
+      "content": "Closures allow a function to access variables from an enclosing scope or environment even after it leaves the scope in which it was declared...",
+      "date": "2025-06-30",
+      "timestamp": "2025-06-30T09:00:00.000Z"
+    },
+    {
+      "id": 7,
+      "authorId": "7Zq0RnTdsZds8bNbfZibh6USPP43",
+      "title": "React useEffect Simplified",
+      "content": "The useEffect hook lets you perform side effects in functional components. It runs after the component renders...",
+      "date": "2025-06-30",
+      "timestamp": "2025-06-30T09:00:00.000Z"
+    },
+    {
+      "id": 8,
+      "authorId": "7Zq0RnTdsZds8bNbfZibh6USPP43",
+      "title": "Difference Between var, let, and const",
+      "content": "In JavaScript, var is function-scoped while let and const are block-scoped. Use const when variables shouldn't change...",
+      "date": "2025-06-30",
+      "timestamp": "2025-06-30T09:00:00.000Z"
+    },
+    {
+      "id": 9,
+      "authorId": "7Zq0RnTdsZds8bNbfZibh6USPP43",
+      "title": "JavaScript Hoisting Explained",
+      "content": "Hoisting in JavaScript allows variables and function declarations to be moved to the top of their scope before code execution...",
+      "date": "2025-07-01",
+      "timestamp": "2025-07-01T09:00:00.000Z"
+    },
+    {
+      "id": 10,
+      "authorId": "7Zq0RnTdsZds8bNbfZibh6USPP43",
+      "title": "How Promises Work in JavaScript",
+      "content": "A Promise is an object representing the eventual completion or failure of an asynchronous operation...",
+      "date": "2025-07-02",
+      "timestamp": "2025-07-02T09:00:00.000Z"
+    },
+    {
+      "id": 11,
+      "authorId": "D3iaP8eGDoWSibJm4SvNuACwwAU2",
+      "title": "Building a Todo App with React",
+      "content": "Creating a simple Todo App is a great way to learn React concepts like state, props, and event handling...",
+      "date": "2025-07-03",
+      "timestamp": "2025-07-03T09:00:00.000Z"
+    },
+    {
+      "id": 12,
+      "authorId": "KlssJ4cVKsYMXOBGv6jfEPEkLVw2",
+      "title": "Flutter Widgets You Must Know",
+      "content": "Widgets are the building blocks of a Flutter app's UI. Let’s explore some essential widgets like Scaffold, Container, and Column...",
+      "date": "2025-07-04",
+      "timestamp": "2025-07-04T09:00:00.000Z"
+    },
+    {
+      "id": "bd71",
+      "title": "new test title",
+      "content": "hi there i a creating by new blog",
+      "authorId": "7Zq0RnTdsZds8bNbfZibh6USPP43",
+      "date": "29/06/2025, 16:21:34"
+    },
+    {
+      "id": "76b6",
+      "title": "new blog post",
+      "content": "hie ther i am cerateing new blog",
+      "authorId": "7Zq0RnTdsZds8bNbfZibh6USPP43",
+      "date": "29/06/2025, 16:22:53"
     }
   ],
   "comments": [
@@ -121,7 +223,181 @@
       "id": 1,
       "blogId": 1,
       "author": "Priya Sharma",
-      "message": "Great insights on scalable React components!"
+      "message": "Great insights on scalable React components!",
+      "date": "2025-07-01",
+      "timestamp": "2025-07-01T10:00:00.000Z"
+    },
+    {
+      "id": 2,
+      "blogId": 6,
+      "author": "Anita Mehra",
+      "message": "Great explanation of closures. Helped me understand the concept clearly.",
+      "date": "2025-07-01",
+      "timestamp": "2025-07-01T10:00:00.000Z"
+    },
+    {
+      "id": 3,
+      "blogId": 7,
+      "author": "Ravi Singh",
+      "message": "Finally understood useEffect. Thanks for keeping it simple.",
+      "date": "2025-07-01",
+      "timestamp": "2025-07-01T10:00:00.000Z"
+    },
+    {
+      "id": 4,
+      "blogId": 8,
+      "author": "Dev Sharma",
+      "message": "Very clear differences between var, let, and const. Nicely done!",
+      "date": "2025-07-01",
+      "timestamp": "2025-07-01T10:00:00.000Z"
+    },
+    {
+      "id": 5,
+      "blogId": 9,
+      "author": "Meena Jha",
+      "message": "Your explanation on hoisting really cleared up my confusion. Thanks!",
+      "date": "2025-07-01",
+      "timestamp": "2025-07-01T10:00:00.000Z"
+    },
+    {
+      "id": 6,
+      "blogId": 10,
+      "author": "Rohit Sinha",
+      "message": "Promises always confused me, but this was super helpful.",
+      "date": "2025-07-01",
+      "timestamp": "2025-07-01T10:00:00.000Z"
+    },
+    {
+      "id": 7,
+      "blogId": 11,
+      "author": "Ankur Verma",
+      "message": "Great intro to React with a practical example.",
+      "date": "2025-07-01",
+      "timestamp": "2025-07-01T10:00:00.000Z"
+    },
+    {
+      "id": 8,
+      "blogId": 12,
+      "author": "Sneha Rao",
+      "message": "Loved the Flutter widget breakdown!",
+      "date": "2025-07-01",
+      "timestamp": "2025-07-01T10:00:00.000Z"
+    },
+    {
+      "id": 9,
+      "blogId": 9,
+      "author": "Amit Singh",
+      "message": "I always struggled with hoisting. This made it much clearer.",
+      "date": "2025-07-01",
+      "timestamp": "2025-07-01T10:00:00.000Z"
+    },
+    {
+      "id": 10,
+      "blogId": 10,
+      "author": "Riya Patel",
+      "message": "The Promise diagrams helped a lot. Nice visuals!",
+      "date": "2025-07-01",
+      "timestamp": "2025-07-01T10:00:00.000Z"
+    },
+    {
+      "id": 11,
+      "blogId": 11,
+      "author": "Pooja Nair",
+      "message": "Can you also cover how to add localStorage next?",
+      "date": "2025-07-01",
+      "timestamp": "2025-07-01T10:00:00.000Z"
+    },
+    {
+      "id": 12,
+      "blogId": 12,
+      "author": "Vikram Joshi",
+      "message": "Scaffold and Container always confused me, thanks for the examples.",
+      "date": "2025-07-01",
+      "timestamp": "2025-07-01T10:00:00.000Z"
+    },
+    {
+      "id": "230e",
+      "blogId": "4",
+      "author": "Anonymous",
+      "message": "i like your post",
+      "date": "29/06/2025, 14:50:07"
+    },
+    {
+      "id": "25c4",
+      "blogId": "5",
+      "author": "Anonymous",
+      "message": "hi",
+      "date": "29/06/2025, 15:01:30"
+    },
+    {
+      "id": "d003",
+      "blogId": "5",
+      "author": "Anonymous",
+      "message": "hi",
+      "date": "29/06/2025, 15:02:28"
+    },
+    {
+      "id": "c719",
+      "blogId": "5",
+      "author": "rahul",
+      "message": "upate you data",
+      "date": "29/06/2025, 15:04:00"
+    },
+    {
+      "id": "d0ad",
+      "blogId": "2",
+      "author": "Rahul",
+      "avatar": "https://ui-avatars.com/api/?name=Rahul%20Kumar",
+      "message": "hi there",
+      "date": "29/06/2025, 15:06:00"
+    },
+    {
+      "id": "9b29",
+      "blogId": "2",
+      "author": "Rahul Kumar",
+      "avatar": "https://ui-avatars.com/api/?name=Rahul%20Kumar",
+      "message": "hi there",
+      "date": "29/06/2025, 15:07:47"
+    },
+    {
+      "id": "eb00",
+      "blogId": "3",
+      "author": "Rahul Kumar",
+      "avatar": "https://ui-avatars.com/api/?name=Rahul%20Kumar",
+      "message": "hi john dev, i like you blogs",
+      "date": "29/06/2025, 15:11:25"
+    },
+    {
+      "id": "235b",
+      "blogId": "3",
+      "author": "Rahul Kumar",
+      "avatar": "https://ui-avatars.com/api/?name=Rahul%20Kumar",
+      "message": "hi there",
+      "date": "29/06/2025, 15:14:04"
+    },
+    {
+      "id": "8c66",
+      "blogId": "3",
+      "author": "Rahul Kumar",
+      "avatar": "https://ui-avatars.com/api/?name=Rahul%20Kumar",
+      "message": "please add more",
+      "date": "29/06/2025, 15:15:42"
+    },
+    {
+      "id": "47c8",
+      "blogId": "3",
+      "author": "Rahul Kumar",
+      "avatar": "https://ui-avatars.com/api/?name=Rahul%20Kumar",
+      "message": "please add more",
+      "date": "29/06/2025, 15:19:07"
+    },
+    {
+      "id": "0375",
+      "blogId": "2",
+      "author": "Rahul Kumar",
+      "avatar": "https://ui-avatars.com/api/?name=Rahul%20Kumar",
+      "message": "love your blogs",
+      "date": "29/06/2025, 15:25:06"
     }
   ]
 }

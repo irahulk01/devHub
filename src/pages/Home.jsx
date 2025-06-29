@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import {fetchDeveloperPofile} from "../services/developerServices"
+import {fetchDeveloperPofile} from "../services/apiServices"
 import ReactPaginate from "react-paginate";
 import { useTheme } from "../context/ThemeContext";
 
