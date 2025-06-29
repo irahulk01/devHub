@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { fetchBlogsByAuthorId } from "../services/apiServices";
-import { Link } from "react-router-dom";
+import { fetchBlogsByAuthorId, deleteBlog } from "../services/apiServices";
+import { Link, useNavigate } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
 
 export default function BlogList({ authorId }) {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [confirmDialog, setConfirmDialog] = useState({ open: false, blogId: null });
 
   useEffect(() => {
     if (!authorId) return;
@@ -25,6 +26,23 @@ export default function BlogList({ authorId }) {
   const { theme } = useTheme();
   const isDark = theme === "dark";
 
+  const navigate = useNavigate();
+
+  const handleDelete = (blogId) => {
+    setConfirmDialog({ open: true, blogId });
+  };
+
+  const confirmDelete = async () => {
+    try {
+      await deleteBlog(confirmDialog.blogId);
+      setBlogs((prev) => prev.filter((b) => b.id !== confirmDialog.blogId));
+    } catch (err) {
+      console.error("Failed to delete blog", err);
+    } finally {
+      setConfirmDialog({ open: false, blogId: null });
+    }
+  };
+
   if (loading)
     return <p className="text-gray-500 dark:text-gray-300">Loading blogs...</p>;
 
@@ -41,17 +59,59 @@ export default function BlogList({ authorId }) {
         {blogs.map((blog) => (
           <article
             key={blog.id}
-            className={`p-5 rounded-xl shadow-sm hover:shadow-md transition duration-200 border ${
+            className={`p-5 rounded-xl shadow-sm hover:shadow-md transition duration-200 border relative ${
               isDark
                 ? 'bg-gray-800/60 border-gray-700 text-gray-100'
                 : 'bg-gray-100 border-gray-200 text-gray-800'
             }`}
           >
-            <Link to={`/developers/${authorId}/blogs/${blog.id}`}>
-              <h3 className="text-lg font-semibold text-indigo-600 dark:text-indigo-300 hover:underline">
-                {blog.title}
-              </h3>
-            </Link>
+            <div className="flex justify-between items-start">
+              <Link to={`/developers/${authorId}/blogs/${blog.id}`}>
+                <h3 className="text-lg font-semibold text-indigo-600 dark:text-indigo-300 hover:underline">
+                  {blog.title}
+                </h3>
+              </Link>
+              <div className="relative">
+                <button
+                  onClick={() => handleDelete(blog.id)}
+                  className="text-red-500 hover:text-red-700 text-sm"
+                >
+                  🗑
+                </button>
+                {confirmDialog.open && confirmDialog.blogId === blog.id && (
+                  <div
+                    className={`absolute right-0 mt-2 z-50 p-4 rounded shadow-lg border ${
+                      isDark
+                        ? "bg-gray-900 border-gray-700 text-white"
+                        : "bg-white border-gray-300 text-gray-900"
+                    }`}
+                  >
+                    <h3 className={`text-sm font-semibold mb-2 ${isDark ? 'text-white' : 'text-gray-800'}`}>Confirm Deletion</h3>
+                    <p className={`text-xs mb-3 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                      Are you sure you want to delete this blog?
+                    </p>
+                    <div className="flex justify-end gap-2">
+                      <button
+                        onClick={() => setConfirmDialog({ open: false, blogId: null })}
+                        className={`px-3 py-1 text-xs rounded hover:bg-gray-300 dark:hover:bg-gray-600 ${
+                          isDark
+                            ? "bg-gray-700 text-gray-200"
+                            : "bg-gray-200 text-gray-800"
+                        }`}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={confirmDelete}
+                        className="px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700"
+                      >
+                        Yes, Delete
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
             <p className={`text-xs italic ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
               {blog.date}
             </p>
