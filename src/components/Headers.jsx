@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -11,13 +12,20 @@ export default function Header() {
   const [hovered, setHovered] = useState(false);
   const { theme, toggleTheme } = useTheme();
 
+  const { data: developerData } = useQuery({
+    queryKey: ["developer", user?.uid],
+    queryFn: async () => {
+      if (!user?.uid) return null;
+      const res = await axios.get(`${import.meta.env.VITE_API}/developers?uid=${user.uid}`);
+      return res.data[0];
+    },
+    enabled: !!user?.uid,
+    retry: 1,
+  });
+
   useEffect(() => {
-    if (!user?.uid) return;
-    axios
-      .get(`${import.meta.env.VITE_API}/developers?uid=${user.uid}`)
-      .then((res) => setDeveloper(res.data[0]))
-      .catch(() => setDeveloper(null));
-  }, [user?.uid]);
+    setDeveloper(developerData);
+  }, [developerData]);
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", theme === "dark");

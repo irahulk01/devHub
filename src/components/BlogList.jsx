@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { fetchBlogsByAuthorId, deleteBlog } from "../services/apiServices";
 import { Link, useNavigate } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
@@ -43,6 +43,26 @@ export default function BlogList({ authorId }) {
     }
   };
 
+  const popupRef = useRef();
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (popupRef.current && !popupRef.current.contains(event.target)) {
+        setConfirmDialog({ open: false, blogId: null });
+      }
+    };
+
+    if (confirmDialog.open) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [confirmDialog]);
+
   if (loading)
     return <p className="text-gray-500 dark:text-gray-300">Loading blogs...</p>;
 
@@ -59,10 +79,10 @@ export default function BlogList({ authorId }) {
         {blogs.map((blog) => (
           <article
             key={blog.id}
-            className={`p-5 rounded-xl shadow-sm hover:shadow-md transition duration-200 border relative ${
+            className={`p-6 rounded-xl shadow-md transition duration-300 border relative ${
               isDark
-                ? 'bg-gray-800/60 border-gray-700 text-gray-100'
-                : 'bg-gray-100 border-gray-200 text-gray-800'
+                ? 'bg-gray-900 border-gray-700 text-gray-100'
+                : 'bg-white border-gray-300 text-gray-900'
             }`}
           >
             <div className="flex justify-between items-start">
@@ -74,12 +94,13 @@ export default function BlogList({ authorId }) {
               <div className="relative">
                 <button
                   onClick={() => handleDelete(blog.id)}
-                  className="text-red-500 hover:text-red-700 text-sm"
+                  className="text-red-500 hover:text-red-700 text-sm cursor-pointer"
                 >
                   🗑
                 </button>
                 {confirmDialog.open && confirmDialog.blogId === blog.id && (
                   <div
+                    ref={popupRef}
                     className={`absolute right-0 mt-2 z-50 p-4 rounded shadow-lg border ${
                       isDark
                         ? "bg-gray-900 border-gray-700 text-white"
@@ -103,7 +124,7 @@ export default function BlogList({ authorId }) {
                       </button>
                       <button
                         onClick={confirmDelete}
-                        className="px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700"
+                        className="px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 cursor-pointer"
                       >
                         Yes, Delete
                       </button>
@@ -115,7 +136,11 @@ export default function BlogList({ authorId }) {
             <p className={`text-xs italic ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
               {blog.date}
             </p>
-            <p className={`text-sm ${isDark ? 'text-gray-100' : 'text-gray-800'}`}>
+            <p className={`text-sm mt-1 leading-relaxed ${
+              isDark
+                ? 'text-gray-200'
+                : 'text-gray-800'
+            }`}>
               {blog.content.length > 120
                 ? blog.content.slice(0, 120) + "..."
                 : blog.content}

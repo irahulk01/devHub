@@ -61,7 +61,7 @@ export default function DeveloperProfile() {
               onClick={() =>
                 navigate("/createBlogPost", { state: { author: developer } })
               }
-              className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-md text-sm font-medium shadow transition"
+              className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-md text-sm font-medium shadow transition cursor-pointer"
             >
               ➕ Create Blog Post
             </button>
@@ -71,7 +71,7 @@ export default function DeveloperProfile() {
               onClick={() =>
                 navigate("/profile/edit", { state: { developer } })
               }
-              className="text-indigo-600 dark:text-indigo-400 hover:underline text-sm font-medium transition"
+              className="text-indigo-600 dark:text-indigo-400 hover:underline text-sm font-medium transition cursor-pointer"
             >
               ✏️ Edit Profile
             </button>
