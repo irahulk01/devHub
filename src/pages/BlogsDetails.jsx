@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useTheme } from "../context/ThemeContext";
 import { useForm } from "react-hook-form";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 const CommentList = lazy(() => import("../components/CommentList"));
 
@@ -15,9 +16,21 @@ export default function BlogDetail() {
 
   const [authorInfo, setAuthorInfo] = useState(null);
 
-  const [comments, setComments] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const commentsPerPage = 3;
+
+  const queryClient = useQueryClient();
+  const {
+    data: comments = [],
+    isLoading: commentsLoading,
+  } = useQuery({
+    queryKey: ["comments", id],
+    queryFn: async () => {
+      const res = await axios.get(`${import.meta.env.VITE_API}/comments?blogId=${id}`);
+      return res.data || [];
+    },
+    enabled: !!id,
+  });
 
   const {
     register,
@@ -64,20 +77,6 @@ export default function BlogDetail() {
         setAuthorInfo(null);
       });
   }, [authorId]);
-
-  useEffect(() => {
-    if (!id) return;
-
-    axios
-      .get(`${import.meta.env.VITE_API}/comments?blogId=${id}`)
-      .then((res) => {
-        setComments(res.data || []);
-      })
-      .catch((err) => {
-        console.error("Failed to fetch comments", err);
-        setComments([]);
-      });
-  }, []);
 
   if (loading) return <div className="p-6">Loading blog...</div>;
   if (!blog) return <div className="p-6 text-red-500">Blog not found.</div>;
@@ -128,12 +127,14 @@ export default function BlogDetail() {
         <p className="text-sm italic text-gray-500 dark:text-gray-400 mb-4">
           {blog.date}
         </p>
-        <article className="prose dark:prose-invert max-w-none text-base leading-relaxed">
-          <pre
-            className={`whitespace-pre-wrap overflow-x-auto p-4 rounded bg-gray-100 dark:bg-gray-800 text-sm ${
-              theme === "dark" ? "text-white" : "text-gray-800"
-            }`}
-          >
+        <article
+          className={`prose max-w-none text-base leading-relaxed ${
+            theme === "dark"
+              ? "prose-invert bg-gray-800 text-white"
+              : "bg-gray-100 text-gray-900"
+          } p-4 rounded`}
+        >
+          <pre className="whitespace-pre-wrap overflow-x-auto text-sm">
             <code>{blog.content}</code>
           </pre>
         </article>
@@ -176,7 +177,7 @@ export default function BlogDetail() {
 
               try {
                 const res = await axios.post(`${import.meta.env.VITE_API}/comments`, newComment);
-                setComments((prev) => [res.data, ...prev]);
+                queryClient.invalidateQueries(["comments", id]);
                 reset();
               } catch (error) {
                 console.error("Failed to post comment:", error);

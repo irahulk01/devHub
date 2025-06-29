@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import {fetchDeveloperPofile} from "../services/apiServices"
+import { useQuery } from "@tanstack/react-query";
+import { fetchDeveloperPofile } from "../services/apiServices";
 import ReactPaginate from "react-paginate";
 import { useTheme } from "../context/ThemeContext";
 
@@ -13,15 +14,18 @@ export default function Home() {
   const itemsPerPage = 5;
   const navigate = useNavigate();
 
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["developers"],
+    queryFn: fetchDeveloperPofile,
+  });
+
   useEffect(() => {
-   fetchDeveloperPofile()
-      .then(res => {
-        setDevelopers(res.data);
-        setFiltered(res.data.slice(0, itemsPerPage));
-        setCurrentPage(0);
-      })
-      .catch(err => console.error("Error fetching developers", err));
-  }, []);
+    if (data?.data) {
+      setDevelopers(data.data);
+      setFiltered(data.data.slice(0, itemsPerPage));
+      setCurrentPage(0);
+    }
+  }, [data]);
 
   const debounceRef = useRef(null);
 
@@ -57,7 +61,23 @@ export default function Home() {
     setCurrentPage(selected);
   };
 
- return (
+  if (isLoading) {
+    return (
+      <div className={`p-6 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+        Loading developers...
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className={`p-6 ${theme === 'dark' ? 'text-red-400' : 'text-red-600'}`}>
+        Failed to load developers.
+      </div>
+    );
+  }
+
+  return (
     <div className={`p-6 max-w-7xl mx-auto transition-colors duration-300 ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
       <h1 className="text-2xl font-bold mb-4">Developers Hub</h1>
       <input
@@ -159,10 +179,13 @@ export default function Home() {
           )}
           onPageChange={handlePageClick}
           containerClassName={`flex justify-center gap-2 mt-6 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}
-          pageClassName={"px-3 py-1 border border-gray-300 rounded"}
+          pageClassName={"cursor-pointer"}
+          pageLinkClassName={"px-3 py-1 border border-gray-300 rounded flex items-center justify-center w-full h-full"}
           activeClassName={"bg-indigo-600 text-white"}
-          previousClassName={"px-3 py-1 border border-gray-300 rounded"}
-          nextClassName={"px-3 py-1 border border-gray-300 rounded"}
+          previousClassName={"cursor-pointer"}
+          previousLinkClassName={"px-3 py-1 border border-gray-300 rounded flex items-center justify-center w-full h-full"}
+          nextClassName={"cursor-pointer"}
+          nextLinkClassName={"px-3 py-1 border border-gray-300 rounded flex items-center justify-center w-full h-full"}
           disabledClassName={"opacity-50 cursor-not-allowed"}
         />
       )}

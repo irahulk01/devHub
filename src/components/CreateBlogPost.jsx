@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
+import { useMutation } from "@tanstack/react-query";
 import { useTheme } from "../context/ThemeContext";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -12,6 +13,45 @@ export default function CreateBlogPost() {
   const location = useLocation();
   const author = location.state?.author;
   const blog = location.state?.blog;
+
+  const createBlogMutation = useMutation({
+    mutationFn: async (data) => {
+      const payload = {
+        ...data,
+        authorId: author?.uid,
+        date: new Date().toLocaleString()
+      };
+      return axios.post(`${import.meta.env.VITE_API}/blogs`, payload);
+    },
+    onSuccess: () => {
+      toast.success("Blog posted successfully!");
+      navigate(`/developers/${author?.uid}`);
+    },
+    onError: () => {
+      toast.error("Failed to create blog. Please try again.");
+    }
+  });
+
+  const updateBlogMutation = useMutation({
+    mutationFn: async (data) => {
+      const payload = {
+        ...data,
+        authorId: blog?.authorId,
+        date: new Date().toLocaleString()
+      };
+      return axios.put(`${import.meta.env.VITE_API}/blogs/${blog.id}`, {
+        ...blog,
+        ...payload
+      });
+    },
+    onSuccess: () => {
+      toast.success("Blog updated successfully!");
+      navigate(`/developers/${blog?.authorId}`);
+    },
+    onError: () => {
+      toast.error("Failed to update blog. Please try again.");
+    }
+  });
 
   const {
     register,
@@ -34,29 +74,12 @@ export default function CreateBlogPost() {
   }, [blog]);
 
   const onSubmit = async (data) => {
-    const payload = {
-      ...data,
-      authorId: blog?.authorId || author?.uid,
-      date: new Date().toLocaleString()
-    };
-
-    try {
-      if (blog?.id) {
-        await axios.put(`${import.meta.env.VITE_API}/blogs/${blog.id}`, {
-          ...blog,
-          ...payload
-        });
-        toast.success("Blog updated successfully!");
-      } else {
-        await axios.post(`${import.meta.env.VITE_API}/blogs`, payload);
-        toast.success("Blog posted successfully!");
-      }
-
-      reset();
-      navigate(`/developers/${payload.authorId}`);
-    } catch (err) {
-      toast.error("Failed to save blog. Please try again.");
+    if (blog?.id) {
+      updateBlogMutation.mutate(data);
+    } else {
+      createBlogMutation.mutate(data);
     }
+    reset();
   };
 
   const inputBaseClass = "w-full px-4 py-2 border rounded";
@@ -111,7 +134,8 @@ export default function CreateBlogPost() {
 
         <button
           type="submit"
-          className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded font-medium transition"
+          className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded font-medium transition cursor-pointer"
+          disabled={createBlogMutation.isPending || updateBlogMutation.isPending}
         >
           {blog ? "Update" : "Publish"}
         </button>

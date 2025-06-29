@@ -246,7 +246,7 @@ const onSubmit = async (data) => {
                   <button
                     type="button"
                     onClick={() => remove(index)}
-                    className="absolute -top-2 -right-2 bg-red-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold opacity-0 group-hover:opacity-100 group-hover:pointer-events-auto pointer-events-none transition-opacity duration-200 ease-in-out"
+                    className="absolute -top-2 -right-2 bg-red-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold opacity-0 group-hover:opacity-100 group-hover:pointer-events-auto pointer-events-none transition-opacity duration-200 ease-in-out cursor-pointer"
                     title="Remove skill">
                     ×
                   </button>
@@ -281,7 +281,7 @@ const onSubmit = async (data) => {
                   setNewSkill("");
                 }
               }}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded text-sm"
+              className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded text-sm cursor-pointer"
             >
               Add
             </button>
@@ -297,7 +297,7 @@ const onSubmit = async (data) => {
         <div className="md:col-span-2">
           <button
             type="submit"
-            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded"
+            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded cursor-pointer"
           >
             Save Changes
           </button>
