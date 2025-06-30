@@ -13,6 +13,7 @@ import axios from "axios";
 import * as yup from "yup";
 import { toast } from "react-toastify";
 import { getFirebaseErrorMessage } from "../utils/firebaseErrorMessages";
+import SkillInput from "../components/SkillInput";
 
 const schema = yup.object({
   name: yup.string().required("Full name is required").min(3),
@@ -235,21 +236,11 @@ const saveUserToDB = async (user, name = "", skills = []) => {
             </div>
 
             {/* Skill Input */}
-            <input
-              type="text"
-              placeholder="Add a skill and press Enter"
-              value={newSkill}
-              onChange={(e) => setNewSkill(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && newSkill.trim()) {
-                  e.preventDefault();
-                  if (!skills.includes(newSkill.trim())) {
-                    append(newSkill.trim());
-                    setNewSkill("");
-                  }
-                }
-              }}
-              className="w-full px-3 py-2 border border-gray-300 rounded text-gray-800"
+            <SkillInput
+              skills={skills}
+              append={append}
+              newSkill={newSkill}
+              setNewSkill={setNewSkill}
             />
 
             {Array.isArray(errors.skills) &&
@@ -258,14 +249,6 @@ const saveUserToDB = async (user, name = "", skills = []) => {
                   {errors.skills.find((e) => e?.message)?.message}
                 </p>
               )}
-
-            <button
-              type="button"
-              onClick={() => append("")}
-              className="text-indigo-600 text-sm mt-2 hover:underline"
-            >
-              + Add another skill
-            </button>
           </div>
 
           <button
